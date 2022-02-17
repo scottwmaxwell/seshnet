@@ -7,7 +7,7 @@ This a web application for communicating
 ### Decentralized
 The main goal of this open source project is to create a web application that can easily be self-hosted on a computer with low computing power. The point of this is to create decrentralized system that doesn't have one specific point of control. Each server can implement their own policies.
 
-### Privacy
+### Private
 Communication on this application should be as private as possible without sacrificing too much usability and functionality.
 
 ### Convenient

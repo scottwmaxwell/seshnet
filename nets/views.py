@@ -9,6 +9,4 @@ def home(request):
 		return render(request, 'nets/home.html')
 	else:
 		return render(request, 'nets/home.html')
-		# TODO: Change it so that it redirects to login page
-		#redirect(auth_views.LoginView)
 		

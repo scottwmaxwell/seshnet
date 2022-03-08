@@ -1,0 +1,18 @@
+<div class="">
+		<form method="POST">
+			{% csrf_token %}
+			<fieldset class="">
+				<legend class=''>Join Today</legend>
+				{{ form }}
+			</fieldset>
+			<div>
+				<button class = '' type="Submit">Sign Up</button>
+			</div>
+
+			<div>
+				<small>
+				Already have an account? <a href="{% url 'login' %}">Log in</a>
+				</small>
+			</div>
+		</form>
+</div>

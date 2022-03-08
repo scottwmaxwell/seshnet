@@ -5,7 +5,8 @@ env/
 venv/ 
 ENV/ 
 env.bak/ 
-venv.bak/ 
+venv.bak/
+seshnet/.env
 
 # Sublime Text # 
 *.tmlanguage.cache 

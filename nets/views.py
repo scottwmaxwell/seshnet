@@ -8,5 +8,5 @@ def home(request):
 	if request.user.is_authenticated:
 		return render(request, 'nets/home.html')
 	else:
-		return render(request, 'nets/home.html')
+		return render(request, 'nets/home-unathenticated.html')
 		

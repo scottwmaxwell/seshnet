@@ -1,12 +1,17 @@
-<div class="">
+
+{% extends 'nets/base.html' %}
+{% load crispy_forms_filters %}
+
+{% block content%}
+<div class="container">
 		<form method="POST">
 			{% csrf_token%}
-			<fieldset class="">
-				<legend>Log In</legend>
-				{{ form }}
+			<fieldset class="form-group">
+				<legend class='border-bottom mb-4'>Log In</legend>
+				{{ form|crispy }}
 			</fieldset>
 			<div>
-				<button class = '' type="Submit">Log in</button>
+				<button class = 'btn btn-primary' style='background-color: #ce650a !important' type="Submit">Log in</button>
 			</div>
 
 			<div>
@@ -16,3 +21,4 @@
 			</div>
 		</form>
 </div>
+{% endblock content %}

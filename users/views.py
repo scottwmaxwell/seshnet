@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserSignUpForm
-
+from django.contrib.auth.decorators import login_required
 
 def signup(request):
 
@@ -17,3 +17,10 @@ def signup(request):
 		form = UserSignUpForm()
 	context = {"form":form}
 	return render(request, 'users/signup.html', context)
+
+
+@login_required
+def settings(request):
+
+	# Get user and pass it into template
+	return render(request, 'users/settings.html')

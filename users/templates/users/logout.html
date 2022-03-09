@@ -1,10 +1,15 @@
-<div class="">
+{% extends 'nets/base.html' %}
+
+{% block content %}
+<div class="container">
 	<div method="content-section">
 		<div>
             <h1>You have been logged out</h1>
 			<small>
-			     <a href="{% url 'login' %}"><button>Log in again</button></a>
+			     <button class='btn btn-primary' onclick="location.href='{% url 'login' %}'">Log in again</button>
 			</small>
 		</div>
 	</div>
 </div>
+
+{% endblock content %}

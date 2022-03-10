@@ -11,3 +11,8 @@ def home(request):
 		return render(request, 'nets/home.html')
 	else:
 		return render(request, 'nets/home-unathenticated.html')
+
+def net(request, net_name):
+    return render(request, 'nets/net.html', {
+        'net_name': net_name
+    })

@@ -28,4 +28,5 @@ urlpatterns = [
     path('settings/', users_views.settings, name='settings'),
     path('login', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='nets/home-unathenticated.html'), name='logout'),
+    path('nets/<str:net_name>/', nets_views.net, name='net')
 ]

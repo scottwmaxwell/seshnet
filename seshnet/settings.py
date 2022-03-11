@@ -79,7 +79,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'seshnet.wsgi.application'
+
 ASGI_APPLICATION = "seshnet.asgi.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND':'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts":[('127.0.0.1', 6739)]
+        },
+    },
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases

@@ -15,3 +15,8 @@ From both the user's and host's point of view, the app should feel easy and usab
 
 ### Free:
 The service should be free for all users.
+
+## Eventual Goal
+
+An eventual goal is to create a centralized place to switch between the servers which are decentralized.
+This application is the bare bones and all that should be needed, but to have a website that can be used to access other decentralized servers would help improve the user experience. I'm still brain storming how this could be accomplished...

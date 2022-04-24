@@ -3,11 +3,54 @@
 
 {% block content %}
 
-<textarea id="chat-log" cols="100" rows="20"></textarea><br>
+<head>
+    <title>{{net_name}}</title>
+
+    <style>
+      div.scroll {
+        background-color: ;
+        width: 600px;
+        height: 400px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        text-align: center;
+        padding: 20px;
+      }
+    </style>
+
+</head>
+
+    <div class="scroll" id="chat-log" contenteditable="true">
+
+    </div>
+
+
 <input id="chat-message-input" type="text" size="100"><br>
 <input id="chat-message-submit" type="button" value="Send">
 {{ net_name|json_script:"net-name" }}
 <script>
+
+
+    function loadImage() {
+       objDiv.scrollTop = objDiv.scrollHeight;
+    }
+
+    var objDiv = document.getElementById("chat-log");
+
+
+    window.onload=function () {
+        var objDiv = document.getElementById("chat-log");
+        objDiv.scrollTop = objDiv.scrollHeight;
+    }
+
+
+
+    {% for i in "aaaaaaaaaaaaaaaa" %}
+        document.getElementById('chat-log').innerHTML += 'test message (would normally be from database<br>';
+        document.getElementById('chat-log').innerHTML += '<hr>'
+    {% endfor %}
+
+
     const netName = JSON.parse(document.getElementById('net-name').textContent);
 
     const chatSocket = new WebSocket(
@@ -20,7 +63,13 @@
 
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        document.querySelector('#chat-log').value += (data.message + '\n');
+        // document.querySelector('#chat-log').value += (data.message + '\n');
+
+        document.getElementById('chat-log').innerHTML += (data.message + '<br>');
+        
+        document.getElementById('chat-log').innerHTML += '<hr>'
+
+        objDiv.scrollTop = objDiv.scrollHeight;
     };
 
     chatSocket.onclose = function(e) {

@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from nets import views as nets_views
+from nets import views as net_views
 from users import views as users_views
 
 # For login and logout
@@ -23,10 +23,10 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', nets_views.home, name='home'),
+    path('', net_views.home, name='home'),
     path('signup/', users_views.signup, name='signup'),
     path('settings/', users_views.settings, name='settings'),
     path('login', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='nets/home-unathenticated.html'), name='logout'),
-    path('nets/<str:net_name>/', nets_views.net, name='net')
+    path('net/<str:net_name>/', net_views.net, name='net')
 ]

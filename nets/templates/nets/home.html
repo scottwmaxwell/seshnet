@@ -18,14 +18,30 @@
 <title>Seshnet</title>
 </header>
 
+
+<style>
+
+.main{
+	/*position: fixed;*/
+	/*right: 10px;*/
+	border-radius: 30px;
+}
+
+.main:hover{
+	background-color:background-color: #444 !important;
+}
+
+</style>
+
 <!-- Top Nav -->
 <nav id ="main" class="navbar navbar-expand-lg navbar-light bg-dark" style="opacity:98%; height:">
-
-	{% if user.is_authenticated %}
-		<button class='btn' style='background-color: #ce650a; color: white; left:4px;' onclick="location.href='{% url 'index' %}'">Open Seshnet</button>
-	{% else %}
-		<button class='btn' style='background-color: #ce650a; color: white; left:4px;' onclick="location.href='{% url 'login' %}'">Login</button>
-	{% endif %}
+	<div class="container-fluid">
+		{% if user.is_authenticated %}
+			<button class='btn main' style='background-color: #ce650a; color: white;' onclick="location.href='{% url 'index' %}'">Open Seshnet</button>
+		{% else %}
+			<button class='btn main' style='background-color: #ce650a; color: white;' onclick="location.href='{% url 'login' %}'">Login</button>
+		{% endif %}
+	</div>
 </nav>
 
 <div class="container">

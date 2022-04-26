@@ -8,6 +8,8 @@ env.bak/
 venv.bak/
 seshnet/.env
 
+message_images/
+
 # Sublime Text # 
 *.tmlanguage.cache 
 *.tmPreferences.cache 

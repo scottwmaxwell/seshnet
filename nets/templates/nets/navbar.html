@@ -39,7 +39,7 @@ body {
 }
 
 .sidebar a:hover {
-  color: #f1f1f1;
+  color: #595959;
 }
 
 .sidebar .closebtn {
@@ -57,10 +57,41 @@ body {
   color: white;
   padding: 10px 15px;
   border: none;
+  border-radius: 10px;
 }
 
 .openbtn:hover {
   background-color: #444;
+}
+
+.adminbutton {
+    position: absolute;
+    bottom: 200px;
+    padding-left: 20px;
+}
+
+.dmbutton{
+    position: absolute;
+    bottom: 250px;
+    padding-left: 20px;
+}
+
+.dmbutton:hover{
+  background-color: #444 !important;
+}
+
+.netbutton{
+    position: absolute;
+    bottom: 300px;
+    padding-left: 20px;
+}
+
+.netbutton:hover{
+    background-color: #444 !important;
+}
+
+.adminbutton:hover {
+  background-color: #444 !important;
 }
 
 #main {
@@ -79,19 +110,54 @@ body {
 
 <div id="mySidebar" class="sidebar">
 
-  <h4>Nets</h4>
-  <hr style="color:#e0e0e0;">
-  {% for net in nets %}
-  <a href="{% url 'net' net.id %}">⌬ {{net.title}}</a>
-  {% endfor %}
+  <!-- Show DirectMessages if in DirectMessages -->
+  {% if 'directmessage' in request.path %}
+    <h4>Direct Messages</h4>
+    <hr style="color:#e0e0e0;">
+      {% for conv in conversations %}
+        <!-- <a href="{% url 'net' net.id %}">⌬ {{net.title}}</a> -->
+      {% endfor %}
+
+  <!-- Show Nets if in nets -->
+  {% elif 'net' in request.path %}
+    <h4>Nets</h4>
+    <hr style="color:#e0e0e0;">
+      {% for net in nets %}
+        <a href="{% url 'net' net.id %}">⌬ {{net.title}}</a>
+      {% endfor %}
+
+  {% elif 'index' in request.path %}
+    <h4>Nets</h4>
+    <hr style="color:#e0e0e0;">
+      {% for net in nets %}
+        <a href="{% url 'net' net.id %}">⌬ {{net.title}}</a>
+      {% endfor %}
+  {% endif %}
+  
+
+  {% if 'directmessage' not in request.path %}
+      <button class = 'btn dmbutton' style='background-color:#ce650a; color:white;'>Direct Messages</button>
+  {% endif %}
+
+  {% if 'net' not in request.path and 'index' not in request.path %}
+      <button class = 'btn netbutton' style='background-color:#ce650a; color:white;'>Nets</button>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+    {% if user.profile.role == 'Admin' %}
+      <button class = 'btn adminbutton' style='background-color:#ce650a; color:white;'>Admin Settings</button>
+    {% endif %}
+  {% endif %}
+
 </div>
 
 <!-- Top Nav -->
 <nav id ="main" class="navbar navbar-expand-lg navbar-light bg-dark" style="opacity:98%; height:">
   <button id="mybtn" class="openbtn" onclick="toggleNav()">☰</button>
-  <h4 style="color:#e0e0e0; margin-left:270px;position:absolute;">⌬ {{net_name}}</h4>
+  {% if 'net' in request.path %}
+    <h4 style="color:#e0e0e0; margin-left:350px;position:absolute;">⌬ {{net_name}}</h4>
+  {% endif %}
 </nav>
-
 
 <script>
 

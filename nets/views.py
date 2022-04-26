@@ -10,6 +10,7 @@ def home(request):
 	return render(request, 'nets/home.html')
 
 
+@login_required
 def index(request):
 
 	nets = Net.objects.all()
@@ -20,6 +21,7 @@ def index(request):
 
 	return render(request, 'nets/index.html', context)
 
+@login_required
 def net(request, net_id):
 
 	nets = Net.objects.all()

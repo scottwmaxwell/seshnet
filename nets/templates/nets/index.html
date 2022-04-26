@@ -1,0 +1,47 @@
+{% extends 'nets/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<head>
+    <title>Seshnet</title>
+
+</head>
+
+<style>
+      div.main {
+        background-color:;
+        max-height: 100%;
+        height: 600px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        text-align: left;
+      }
+</style>
+
+<body style="background-color:#111;">
+
+    <div class='row m-0'>
+
+        <!-- Buffer to center content -->
+        <div class='col-sm-2 main_wrap' style="overflow: hidden;"></div>
+
+
+        <!-- Centered Content -->
+        <div class='col-sm-8' style="overflow: hidden; color:white; background-color:#111;">
+
+
+            <div class="main p-3 mb-2 bg-dark text-light">
+
+            </div>    
+
+        </div>
+
+
+        <!-- Buffer to center content -->
+        <div class='col-sm-2'></div>
+
+    </div>
+</body>
+
+{% endblock content %}

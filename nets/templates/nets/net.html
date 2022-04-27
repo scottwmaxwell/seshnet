@@ -9,9 +9,11 @@
     <style>
       div.chat-log {
         background-color:;
-        max-height: 100%;
-        height: 600px;
-        overflow-x: hidden;
+        min-height: 70vh;;
+        max-height: 600px;
+        max-width: 99%;
+        height: 80%;
+        overflow-wrap: break-word;
         overflow-y: auto;
         text-align: left;
       }
@@ -19,6 +21,12 @@
 
       input.chat-message-input{
         width: 95%;
+        border-radius:15px; 
+        bottom:0; 
+        background-color:#111; 
+        border-color:#626263; 
+        color:white;
+        border: 0;
       }
 
     </style>
@@ -37,12 +45,22 @@
         <div class='col-sm-8' style="overflow: hidden; color:white; background-color:#111;">
 
 
+            <div id='newmsg' class="alert alert-dark alert-dismissible fade show" role="alert" style="position:fixed; opacity:70%;">
+              <strong>New Messages</strong>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+
+            <script>$('#newmsg').hide()</script>
+
             <div class="p-3 mb-2 bg-dark text-light">
 
             <div class="chat-log" id="chat-log"></div>
 
-                <input class="chat-message-input" id="chat-message-input" type="text" style="border-radius:4px; bottom:0; background-color:#111; border-color:#626263; color:white;">                
-                    <button id="chat-message-submit" type="button" style="border-radius:4px; border: 0; background-color:#; position:fixed; margin-top:2px;">
+                <input class="chat-message-input" id="chat-message-input" type="text">                
+                    <button id="chat-message-submit" type="button" onclick="" style="border-radius:15px; border: 0; background-color:#; position:fixed; margin-top:2px;">
                         <i class="icon-chevron-right"></i>
                     </button>
                 </input>
@@ -67,15 +85,10 @@
 
 <script>
 
-
-    function loadImage() {
-       objDiv.scrollTop = objDiv.scrollHeight;
-    }
-
     var objDiv = document.getElementById("chat-log");
 
 
-    // scrolls to bottom of chat log when loading the page
+    //scrolls to bottom of chat log when loading the page
     window.onload=function () {
         var objDiv = document.getElementById("chat-log");
         objDiv.scrollTop = objDiv.scrollHeight;
@@ -84,15 +97,14 @@
 
     // Display older messages
     {% for message in messages %}
+        document.getElementById('chat-log').innerHTML += "<img class='rounded-circle' width='40px' height='40px' src='{{ message.author.profile.image.url }}' style='margin-right:20px; margin-bottom: 10px; float:left;'>"
         document.getElementById('chat-log').innerHTML += '<small>{{ message.author }}</small><small> @{{ message.date_sent }}</small><br>'
-        document.getElementById('chat-log').innerHTML += '{{ message.content|urlize}}';
+        document.getElementById('chat-log').innerHTML += '<p>{{ message.content|urlize}}</p>';
         document.getElementById('chat-log').innerHTML += '<hr style="opacity:5%;">'
     {% endfor %}
 
 
     const netID = JSON.parse(document.getElementById('net-id').textContent);
-
-    console.log(netID);
 
     const chatSocket = new ReconnectingWebSocket(
         'ws://'
@@ -102,38 +114,61 @@
         + '/'
     );
 
+    //Message received from websocket
     chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        document.getElementById('chat-log').innerHTML += ('<small>' + 'Usernamegoeshere' + '</small><small> @' + data.date_sent + '</small><br>')
-        document.getElementById('chat-log').innerHTML += (data.message + '<br>');
-        document.getElementById('chat-log').innerHTML += '<hr>';
 
-        // On-send, scroll to bottom of chat-log
-        objDiv.scrollTop = objDiv.scrollHeight;
+        // var chat_height = objDiv.offsetHeight;
+
+        // console.log(objDiv.offsetHeight.toFixed() - objDiv.scrollTop.toFixed())
+
+        //Check if scroll bar is near bottom before new message
+        at_bottom = objDiv.scrollTop.toFixed() >= (objDiv.scrollHeight.toFixed() - 800);
+
+        const data = JSON.parse(e.data);
+        document.getElementById('chat-log').innerHTML += ("<img class='rounded-circle' width='40px' height='40px' src='" + data.user_image +"' style='margin-right:20px; margin-bottom: 10px; float:left;'>");
+        document.getElementById('chat-log').innerHTML += ('<small>' + data.username + '</small><small> @' + data.date_sent + '</small><br>')
+        document.getElementById('chat-log').innerHTML += (data.message + '<br>');
+        document.getElementById('chat-log').innerHTML += '<hr style="opacity:5%;">';
+
+        if(at_bottom){
+            $('#newmsg').hide()
+            objDiv.scrollTop = objDiv.scrollHeight;
+        }else{
+            //show alert for new messages if you can't see them
+
+            if(data.username != '{{ user.username}}')
+            $('#newmsg').show()
+        }
     };
 
     chatSocket.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
     };
 
+
     document.querySelector('#chat-message-input').focus();
     document.querySelector('#chat-message-input').onkeyup = function(e) {
         if (e.keyCode === 13) {  // enter, return
             document.querySelector('#chat-message-submit').click();
         }
+
     };
 
     document.querySelector('#chat-message-submit').onclick = function(e) {
+
         const messageInputDom = document.querySelector('#chat-message-input');
         const message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({
-            'message': message,
-            'user_id': '{{ user.id }}',
-            'net_id': '{{ net_id }}'
-        }));
-        messageInputDom.value = '';
 
-        objDiv.scrollTop = objDiv.scrollHeight;
+        // Check if message is blank
+        if(message != ""){
+
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'user_id': '{{ user.id }}',
+                'net_id': '{{ net_id }}'
+            }));
+            messageInputDom.value = '';
+        }
     };
 </script>
 

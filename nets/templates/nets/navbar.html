@@ -82,7 +82,7 @@ body {
 
 .netbutton{
     position: absolute;
-    bottom: 300px;
+    bottom: 250px;
     padding-left: 20px;
 }
 
@@ -126,7 +126,7 @@ body {
         <a href="{% url 'net' net.id %}">⌬ {{net.title}}</a>
       {% endfor %}
 
-  {% elif 'index' in request.path %}
+  {% elif 'net/index' in request.path %}
     <h4>Nets</h4>
     <hr style="color:#e0e0e0;">
       {% for net in nets %}
@@ -134,13 +134,15 @@ body {
       {% endfor %}
   {% endif %}
   
-
+  <!-- If not on directmessages show directmessage button -->
   {% if 'directmessage' not in request.path %}
-      <button class = 'btn dmbutton' style='background-color:#ce650a; color:white;'>Direct Messages</button>
+      <button class = 'btn dmbutton' style='background-color:#ce650a; color:white;' onclick="location.href='{% url 'dm_index' %}'">Direct Messages</button>
   {% endif %}
 
-  {% if 'net' not in request.path and 'index' not in request.path %}
-      <button class = 'btn netbutton' style='background-color:#ce650a; color:white;'>Nets</button>
+
+  <!-- If not on net or net_index, show net button -->
+  {% if 'net' not in request.path and 'net/index' not in request.path %}
+      <button class = 'btn netbutton' style='background-color:#ce650a; color:white;' onclick="location.href='{% url 'net_index' %}'">Nets</button>
   {% endif %}
 
   {% if user.is_authenticated %}
@@ -154,8 +156,8 @@ body {
 <!-- Top Nav -->
 <nav id ="main" class="navbar navbar-expand-lg navbar-light bg-dark" style="opacity:98%; height:">
   <button id="mybtn" class="openbtn" onclick="toggleNav()">☰</button>
-  {% if 'net' in request.path %}
-    <h4 style="color:#e0e0e0; margin-left:350px;position:absolute;">⌬ {{net_name}}</h4>
+  {% if 'index' not in request.path and 'directmessage' not in request.path %}
+    <h4 style="color:#e0e0e0; margin-left:280px;position:absolute;">⌬ {{net_name}}</h4>
   {% endif %}
 </nav>
 
@@ -186,7 +188,6 @@ function toggleNav(){
 
 function openNav() {
   document.getElementById("mySidebar").style.width = "250px";
-  // document.getElementById("main").style.marginLeft = "250px";
 }
 
 function closeNav() {

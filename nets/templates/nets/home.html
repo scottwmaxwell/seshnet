@@ -22,8 +22,6 @@
 <style>
 
 .main{
-	/*position: fixed;*/
-	/*right: 10px;*/
 	border-radius: 30px;
 }
 
@@ -37,7 +35,7 @@
 <nav id ="main" class="navbar navbar-expand-lg navbar-light bg-dark" style="opacity:98%; height:">
 	<div class="container-fluid">
 		{% if user.is_authenticated %}
-			<button class='btn main' style='background-color: #ce650a; color: white;' onclick="location.href='{% url 'index' %}'">Open Seshnet</button>
+			<button class='btn main' style='background-color: #ce650a; color: white;' onclick="location.href='{% url 'net_index' %}'">Open Seshnet</button>
 		{% else %}
 			<button class='btn main' style='background-color: #ce650a; color: white;' onclick="location.href='{% url 'login' %}'">Login</button>
 		{% endif %}

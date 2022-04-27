@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class Net(models.Model):
 	title = models.CharField(max_length=20, unique=True)
-	description = models.CharField(max_length=200, blank=True)
+
 
 class Message(models.Model):
 	net = models.ForeignKey(Net, on_delete = models.CASCADE)

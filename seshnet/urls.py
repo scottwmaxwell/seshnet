@@ -17,6 +17,11 @@ from django.contrib import admin
 from django.urls import path
 from nets import views as net_views
 from users import views as users_views
+from directmessage import views as dm_views
+
+# For testing images
+from django.conf import settings
+from django.conf.urls.static import static
 
 # For login and logout
 from django.contrib.auth import views as auth_views
@@ -24,10 +29,16 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', net_views.home, name='home'),
-    path('index/', net_views.index, name='index'),
     path('signup/', users_views.signup, name='signup'),
     path('settings/', users_views.settings, name='settings'),
     path('login', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='nets/home.html'), name='logout'),
-    path('net/<str:net_id>/', net_views.net, name='net')
+    path('net/index/', net_views.index, name='net_index'),
+    path('net/<str:net_id>/', net_views.net, name='net'),
+    path('directmessage/index/', dm_views.index, name='dm_index'),
+    path('directmessage/<str:dm_id>/', dm_views.directmessage, name='directmessage'),
 ]
+
+if settings.DEBUG:
+        urlpatterns += static(settings.MEDIA_URL,
+                              document_root=settings.MEDIA_ROOT)

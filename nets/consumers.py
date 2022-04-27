@@ -3,9 +3,11 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 
+
 from django.contrib.auth.models import User
 from .models import Message, Net
 import datetime
+from django.utils.html import urlize
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -39,18 +41,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.save_message(net_id, user_id, message)
 
+        message=urlize(message)
+
         # Send message to net group
         await self.channel_layer.group_send(
             self.net_group_name,
             {
                 'type': 'chat_message',
-                'message': message
+                'message': message,
+                'user_id': user_id
             }
         )
 
     # Receive message from net group
     async def chat_message(self, event):
         message = event['message']
+        user_id = event['user_id']
+
+        #Get username and profile pic url
+        user_info = await self.get_user_info(user_id)
+
+        username = user_info[0]
+        user_image = user_info[1]
 
         date_today = datetime.date.today()
         month = date_today.strftime("%B") 
@@ -65,14 +77,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': message,
             'date_sent': date_sent,
-            'user': ''
+            'username': username,
+            'user_image': user_image
         }))
 
 
     @database_sync_to_async
-    def get_user(self, user_id):
-        return User.objects.get(id=user_id).username
+    def get_user_info(self, user_id):
+        user_id = int(user_id)
+        username = User.objects.get(id=user_id).username
+        image_url = User.objects.get(id=user_id).profile.image.url
 
+        return (username, image_url)
 
     @database_sync_to_async
     def save_message(self, net_id, user_id, message):

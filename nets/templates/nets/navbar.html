@@ -157,7 +157,9 @@ body {
 <nav id ="main" class="navbar navbar-expand-lg navbar-light bg-dark" style="opacity:98%; height:">
   <button id="mybtn" class="openbtn" onclick="toggleNav()">☰</button>
   {% if 'index' not in request.path and 'directmessage' not in request.path %}
-    <h4 style="color:#e0e0e0; margin-left:280px;position:absolute;">⌬ {{net_name}}</h4>
+  <div class="d-md-flex d-block flex-row mx-md-auto mx-0">
+   <h4 style="color:#e0e0e0;">⌬ {{net_name}}</h4>
+  </div>
   {% endif %}
 </nav>
 
@@ -195,6 +197,14 @@ function closeNav() {
   document.getElementById("main").style.marginLeft= "0";
 }
 </script>
-   
+
+
+  {% if 'index' in request.path %}
+  <script>
+      openNav();
+      console.log('here')
+  </script>
+  {% endif %}
+
 </body>
 </html> 

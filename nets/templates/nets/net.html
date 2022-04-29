@@ -9,10 +9,10 @@
     <style>
       div.chat-log {
         background-color:;
-        min-height: 70vh;;
-        max-height: 600px;
+        min-height: 60vh;
+        max-height: 83vh;
         max-width: 99%;
-        height: 80%;
+        height: 20%;
         overflow-wrap: break-word;
         overflow-y: auto;
         text-align: left;
@@ -21,7 +21,8 @@
 
       input.chat-message-input{
         width: 95%;
-        border-radius:15px; 
+        height: 40px;
+        border-radius:20px; 
         bottom:0; 
         background-color:#111; 
         border-color:#626263; 
@@ -59,8 +60,8 @@
 
             <div class="chat-log" id="chat-log"></div>
 
-                <input class="chat-message-input" id="chat-message-input" type="text">                
-                    <button id="chat-message-submit" type="button" onclick="" style="border-radius:15px; border: 0; background-color:#; position:fixed; margin-top:2px;">
+                <input class="chat-message-input" placeholder=" Press enter to send..." id="chat-message-input" type="text">                
+                    <button id="chat-message-submit" hidden type="button">
                         <i class="icon-chevron-right"></i>
                     </button>
                 </input>
@@ -77,8 +78,8 @@
     </div>
 </body>
 
-{{ net_id|json_script:"net-id" }}
 
+{{ net_id|json_script:"net-id" }}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js" integrity="sha512-SxQulwFs2B38bmUJtBSo9tD07MDrtCbY8me3AOZ14tRknCPTeMDLvCQV4ekhs8R0o9QPnW5HQanKfveexVcwLA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -116,7 +117,8 @@
 
     //Message received from websocket
     chatSocket.onmessage = function(e) {
-
+        var audio = new Audio('https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3');
+        
         // var chat_height = objDiv.offsetHeight;
 
         // console.log(objDiv.offsetHeight.toFixed() - objDiv.scrollTop.toFixed())
@@ -130,14 +132,20 @@
         document.getElementById('chat-log').innerHTML += (data.message + '<br>');
         document.getElementById('chat-log').innerHTML += '<hr style="opacity:5%;">';
 
+
+        if(data.username != '{{ user.username}}'){
+            audio.play();
+        }
+
+
         if(at_bottom){
             $('#newmsg').hide()
             objDiv.scrollTop = objDiv.scrollHeight;
         }else{
             //show alert for new messages if you can't see them
-
-            if(data.username != '{{ user.username}}')
-            $('#newmsg').show()
+            if(data.username != '{{ user.username}}'){
+                $('#newmsg').show()
+            }
         }
     };
 
@@ -159,8 +167,8 @@
         const messageInputDom = document.querySelector('#chat-message-input');
         const message = messageInputDom.value;
 
-        // Check if message is blank
-        if(message != ""){
+        // Check if message is blank before submission
+        if(message.match(/[a-z]/i)){
 
             chatSocket.send(JSON.stringify({
                 'message': message,

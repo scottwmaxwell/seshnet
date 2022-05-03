@@ -36,12 +36,22 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
 
         data = json.loads(text_data)
-        
         user_id = data['user_id']
-        message = data['message']
 
-        if data['command'] == 'image':
+        if data['command'] == 'typing':
 
+            # Send message to net group
+            await self.channel_layer.group_send(
+                self.net_group_name,
+                {
+                    'type': 'typing',
+                    'user_id': user_id
+                }
+            )
+        
+
+        elif data['command'] == 'image':
+            message = data['message']
             image_url = data['image_url']
             date_sent = data['date_sent']
             message_id = data['message_id'] 
@@ -69,6 +79,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             net_id = data['net_id']
 
+            message = data['message']
 
             # Replace <div> and <br> in message with \n
             message=message.replace("<div>","")
@@ -95,6 +106,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
 
+
+    # Receive who is typing from net group
+    async def typing(self, event):
+
+        user_id = event['user_id']
+
+        await self.send(text_data=json.dumps({
+            'typing': 'True',
+            'user_id': user_id
+
+        }))
+
     # Receive message from net group
     async def chat_message(self, event):
 
@@ -111,7 +134,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # Get date...
         date = datetime.datetime.now()
         date_sent = date.strftime("%B %d, %Y, %H:%M ")
-        date_sent + date.strftime('%p').lower().replace("", ".")[1:]
+        date_sent += date.strftime('%p').lower().replace("", ".")[1:]
+
+        print(date_sent)
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
@@ -122,7 +147,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'user_image': user_image
         }))
 
-
+    # Receive image message from net group
     async def image_message(self, event):
 
         message = event['message']

@@ -68,10 +68,18 @@ def save_image_form(request, net_id):
 
 			# Let's return this data so that we can send it to the websocket!
 
+			# Modify date time to match how it's displayed
+
+			# Get date...
+			date = message.date_sent
+			date_sent = date.strftime("%B %d, %Y, %H:%M ")
+			date_sent += date.strftime('%p').lower().replace("", ".")[1:]
+
+
 			data = {
 					"status":"valid",
 				    "message":message.content,
-				    "date_sent": message.date_sent,
+				    "date_sent": date_sent,
 				    "message":message.content,
 				    "image_url":message.image.url,
 				    "user": message.author.id,

@@ -24,6 +24,7 @@ div.chat-log {
     font-size: 14px;
     position: relative;
     text-align: left;
+    padding-top: 100px;
 }
 
 img.image_message{
@@ -32,11 +33,15 @@ img.image_message{
     height: 70%;
     width: auto;
     max-width: 80%;
+    padding-bottom: 20px;
+    padding-top: 20px;
 }
 
 div.middle-div{
     background-color: #1d1e23;
     border-radius:10px;
+    margin-bottom: 20px;
+    overflow: visible;
 }
 
 div.centered-div{
@@ -62,6 +67,7 @@ div.input-holder{
     margin-bottom: 3px;
     background-color:#111;  
     border-radius: 12px;
+    margin-top: 35px;
 }
 
 button.chat-message-submit{
@@ -77,7 +83,7 @@ button.chat-message-submit{
 
 p.message{
     margin-left: 60px;
-    /*margin-bottom: 12px;*/
+    margin-bottom: 5px;
 }
 
 .chat-message-input:empty:before {
@@ -129,8 +135,10 @@ button.addimage{
 
                 <div class="chat-log" id="chat-log"></div>
 
-                <div class="input-holder">
+                <!-- Displays who is typing -->
+                <small id="who-is-typing" style="float:left; margin-top:10px;"></small>
 
+                <div class="input-holder">
                     <!-- This form is for images uploads -->
                     <form id="image_form" enctype="multipart/form-data">
                         {% csrf_token %}
@@ -165,7 +173,6 @@ button.addimage{
 
     var objDiv = document.getElementById("chat-log");
 
-
     //scrolls to bottom of chat log when loading the page
     window.onload=function () {
         var objDiv = document.getElementById("chat-log");
@@ -183,16 +190,17 @@ button.addimage{
             
             document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
             {% if message.image %}
-                document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + '{{message.image.url}}' + '">');
+                document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + '{{message.image.url}}' + '"><br>');
             {% endif %}
 
         } else {
+            document.getElementById('chat-log').innerHTML += "<hr style='opacity:0%;'>"
             document.getElementById('chat-log').innerHTML += "<img class='rounded-circle' width='40px' height='40px' src='{{ message.author.profile.image.url }}' style='margin-right:20px; margin-bottom: 10px; float:left;'>"
             document.getElementById('chat-log').innerHTML += '<small>{{ message.author }}</small><small> @{{ message.date_sent }}</small><br>'
             document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
 
             {% if message.image %}
-                document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + '{{message.image.url}}' + '">');
+                document.getElementById('chat-log').innerHTML += ('<br><img class="image_message" src="' + '{{message.image.url}}' + '"><br>');
             {% endif %}
         };
 
@@ -270,6 +278,8 @@ button.addimage{
         document.getElementById('image_form').reset()
     }
 
+    let timeout;
+
     //Message received from websocket
     chatSocket.onmessage = function(e) {
         // var audio = new Audio('notification.mp3');
@@ -280,50 +290,81 @@ button.addimage{
 
         const data = JSON.parse(e.data);
 
-        // If author and date is the same as the previous message, just combine it (no profile pic and user info)
-        if(last_message_author == data.username && last_message_date == data.date_sent){
+        // If someone is typing, display it
+        if (data.typing == "True"){
 
-            document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
+            // Only display to other users
+            if (data.user_id != "{{ user.username }}"){
 
-            if(typeof data.image_url !== 'undefined'){
-                document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + data.image_url + '">');
-            };
+                //Add condition if multiple people are typing.
+                if (document.getElementById('who-is-typing').innerHTML != '' && document.getElementById('who-is-typing').innerHTML.indexOf(data.user_id) < 0){
 
+                    document.getElementById('who-is-typing').innerHTML += (' and' + data.user_id + ' is typing');
+                    clearTimeout(timeout)
+                    timeout = window.setTimeout(removeWhoIsTyping, 3000, '')
 
-        // show username, profile pic, etc.
-        }else{
-
-            document.getElementById('chat-log').innerHTML += ("<img class='rounded-circle' width='40px' height='40px' src='" + data.user_image +"' style='margin-right:20px; margin-bottom: 10px; float:left;'>");
-            document.getElementById('chat-log').innerHTML += ('<small>' + data.username + '</small><small> @' + data.date_sent + '</small><br>')
-            document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
-
-            // If there is an image, show it
-            if(typeof data.image_url !== 'undefined'){
-                document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + data.image_url + '">');
-            };
-        }
-
-        //Reset variables
-        last_message_author = data.username
-        last_message_date = data.date_sent
-
-        // If a new message came in and it's not the current user, play sound notification
-        if(data.username != '{{ user.username}}'){
-            // audio.play();
-        }
-
-        // If at bottom, scroll down automatically
-        if(at_bottom){
-            $('#newmsg').hide()
-            objDiv.scrollTop = objDiv.scrollHeight;
-
-        // Otherwise, show a notification that there is a new message
-        }else{
-            //show alert for new messages if you can't see them
-            if(data.username != '{{ user.username}}'){
-                $('#newmsg').show()
+                }else if(document.getElementById('who-is-typing').innerHTML == ""){
+                    document.getElementById('who-is-typing').innerHTML = ( data.user_id + ' is typing')
+                    clearTimeout(timeout)
+                    timeout = window.setTimeout(removeWhoIsTyping, 3000, data.user_id)
+                }else{
+                    clearTimeout(timeout)
+                    timeout = window.setTimeout(removeWhoIsTyping, 3000, data.user_id)
+                };
             }
-        }
+
+        }else{
+
+            // Remove typing indicator if it's currently showing the user who sent a message
+            if (document.getElementById('who-is-typing').innerHTML.indexOf(data.username) >= 0){
+                document.getElementById('who-is-typing').innerHTML = "";
+             };
+
+            // If author and date is the same as the previous message, just combine it (no profile pic and user info)
+            if(last_message_author == data.username && last_message_date == data.date_sent){
+
+                document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
+
+                if(typeof data.image_url !== 'undefined'){
+                    document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + data.image_url + '"><br>');
+                };
+
+
+            // show username, profile pic, etc.
+            }else{
+                document.getElementById('chat-log').innerHTML += "<hr style='opacity:0%;'>"
+                document.getElementById('chat-log').innerHTML += ("<img class='rounded-circle' width='40px' height='40px' src='" + data.user_image +"' style='margin-right:20px; margin-bottom: 10px; float:left;'>");
+                document.getElementById('chat-log').innerHTML += ('<small>' + data.username + '</small><small> @' + data.date_sent + '</small><br>')
+                document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
+
+                // If there is an image, show it
+                if(typeof data.image_url !== 'undefined'){
+                    document.getElementById('chat-log').innerHTML += ('<br><img class="image_message" src="' + data.image_url + '"><br>');
+                };
+            }
+
+            //Reset variables
+            last_message_author = data.username
+            last_message_date = data.date_sent
+
+            // If a new message came in and it's not the current user, play sound notification
+            if(data.username != '{{ user.username}}'){
+                // audio.play();
+            }
+
+            // If at bottom, scroll down automatically
+            if(at_bottom){
+                $('#newmsg').hide()
+                objDiv.scrollTop = objDiv.scrollHeight;
+
+            // Otherwise, show a notification that there is a new message
+            }else{
+                //show alert for new messages if you can't see them
+                if(data.username != '{{ user.username}}'){
+                    $('#newmsg').show()
+                }
+            }
+        };
     };
 
     chatSocket.onclose = function(e) {
@@ -365,7 +406,14 @@ button.addimage{
             // Clear input field
             document.getElementById('chat-message-input').innerHTML='';
 
-        };
+        }else{
+
+            chatSocket.send(JSON.stringify({
+                'command': 'typing',
+                'user_id': '{{ user.username }}'
+            }));
+
+        }
     };
 
     document.querySelector('#chat-message-submit').onclick = function(e) {
@@ -384,6 +432,21 @@ button.addimage{
             }));
         }
     };
+
+
+    function removeWhoIsTyping(user_id){
+
+        if (user_id === ''){
+            document.getElementById('who-is-typing').innerHTML = ""
+
+        }else{
+
+            string_to_remove = user_id + ' is typing'
+            document.getElementById('who-is-typing').innerHTML = document.getElementById('who-is-typing').innerHTML.replace(string_to_remove, '')
+            console.log('cleared who is typing!')
+        }
+    }
+
 </script>
 
 {% endblock content %}

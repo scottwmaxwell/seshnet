@@ -16,23 +16,23 @@ body {
   z-index: 1;
   top: 60px;
   left: 0;
-  background-color: #111;
+  background-color: #17181c;
   overflow-x: hidden;
-  transition: 0.5s;
+  transition: 0.36s;
   padding-top: 20px;
   opacity: 98%;
 }
 
-.sidebar h4{
+.net_header{
   color: #e0e0e0;
-  margin-left: 10px;
-  padding-bottom: 0px;
+  position: absolute;
+  margin-left: 18%;
 }
 
 .sidebar a {
   padding: 8px 8px 0px 20px;
   text-decoration: none;
-  font-size: 15px;
+  font-size: 16px;
   color: #e0e0e0;
   display: block;
   transition: 0.3s;
@@ -51,13 +51,17 @@ body {
 }
 
 .openbtn {
+
+  border: 0;
+  outline: none;
   font-size: 20px;
   cursor: pointer;
   background-color: #111;
   color: white;
-  padding: 10px 15px;
-  border: none;
+  padding: 8px 15px;
   border-radius: 10px;
+  color: rgba(0,0,0,0);
+  text-shadow: 0 0 0 #e0e0e0;
 }
 
 .openbtn:hover {
@@ -112,25 +116,23 @@ body {
 
   <!-- Show DirectMessages if in DirectMessages -->
   {% if 'directmessage' in request.path %}
-    <h4>Direct Messages</h4>
+    <h4 style="color:#e0e0e0; margin-left: 20px;">Direct Messages</h4>
     <hr style="color:#e0e0e0;">
-      {% for conv in conversations %}
-        <!-- <a href="{% url 'net' net.id %}">⌬ {{net.title}}</a> -->
-      {% endfor %}
+    <!-- Put for loop here to show direct messages  -->
 
   <!-- Show Nets if in nets -->
   {% elif 'net' in request.path %}
-    <h4>Nets</h4>
+    <h4 style="color:#e0e0e0; margin-left: 20px;">Nets</h4>
     <hr style="color:#e0e0e0;">
       {% for net in nets %}
-        <a href="{% url 'net' net.id %}">⌬ {{net.title}}</a>
+        <a href="{% url 'net' net.id %}" id="net_link"># {{net.title}}</a>
       {% endfor %}
 
   {% elif 'net/index' in request.path %}
     <h4>Nets</h4>
     <hr style="color:#e0e0e0;">
       {% for net in nets %}
-        <a href="{% url 'net' net.id %}">⌬ {{net.title}}</a>
+        <a href="{% url 'net' net.id %}" id="net_link"># {{net.title}}</a>
       {% endfor %}
   {% endif %}
   
@@ -145,6 +147,8 @@ body {
       <button class = 'btn netbutton' style='background-color:#ce650a; color:white;' onclick="location.href='{% url 'net_index' %}'">Nets</button>
   {% endif %}
 
+
+  <!-- If user is admin, show admin settings button -->
   {% if user.is_authenticated %}
     {% if user.profile.role == 'Admin' %}
       <button class = 'btn adminbutton' style='background-color:#ce650a; color:white;'>Admin Settings</button>
@@ -157,9 +161,7 @@ body {
 <nav id ="main" class="navbar navbar-expand-lg navbar-light bg-dark" style="opacity:98%; height:">
   <button id="mybtn" class="openbtn" onclick="toggleNav()">☰</button>
   {% if 'index' not in request.path and 'directmessage' not in request.path %}
-  <div class="d-md-flex d-block flex-row mx-md-auto mx-0">
-   <h4 style="color:#e0e0e0;">⌬ {{net_name}}</h4>
-  </div>
+   <h5 class="net_header"># {{net_name}}</h5>
   {% endif %}
 </nav>
 
@@ -173,7 +175,7 @@ function myFunction(mobile) {
   }
 }
 
-var mobile = window.matchMedia("(max-width: 700px)")
+var mobile = window.matchMedia("(max-width: 1300px)")
 myFunction(mobile) // Call listener function at run time
 mobile.addListener(myFunction) // Attach listener function on state changes
 

@@ -4,37 +4,105 @@
 {% block content %}
 
 <head>
+
     <title>{{net_name}}</title>
 
-    <style>
-      div.chat-log {
-        background-color:;
-        min-height: 60vh;
-        max-height: 83vh;
-        max-width: 99%;
-        height: 20%;
-        overflow-wrap: break-word;
-        overflow-y: auto;
-        text-align: left;
-      }
+<style>
 
+form.image_form{
+    opacity: 0%;
+}
 
-      input.chat-message-input{
-        width: 95%;
-        height: 40px;
-        border-radius:20px; 
-        bottom:0; 
-        background-color:#111; 
-        border-color:#626263; 
-        color:white;
-        border: 0;
-      }
+div.chat-log {
+    min-height: 60vh;
+    max-height: 81vh;
+    max-width: 99%;
+    height: 30%;
+    overflow-wrap: break-word;
+    overflow-y: auto;
+    text-align: left;
+    font-size: 14px;
+    position: relative;
+    text-align: left;
+}
 
-    </style>
+img.image_message{
+    /*margin-left: 60px;*/
+
+    max-height: 300px;
+    height: 70%;
+    width: auto;
+}
+
+div.middle-div{
+    background-color: #1d1e23;
+    border-radius:10px;
+}
+
+div.centered-div{
+   max-height: 90vh;
+}
+
+div.chat-message-input{
+    background-color:#111; 
+    border-color:#626263; 
+    color:white;
+    max-width: 100%;
+    border: 0;
+    outline: none;
+    border-radius: 8px;
+    margin-left: 50px;
+    margin-right: 50px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    word-wrap: break-word;
+}
+
+div.input-holder{
+    margin-bottom: 3px;
+    background-color:#111;  
+    border-radius: 12px;
+}
+
+button.chat-message-submit{
+    height: 25px;
+    width: 25px;
+    float:right;
+    border-radius: 30px;
+    text-align: center;
+    border: 0;
+    outline: none;
+    background-color: #1c2a70;
+}
+
+p.message{
+    margin-left: 60px;
+}
+
+.chat-message-input:empty:before {
+    content: attr(placeholder);
+    opacity: 30%;
+}
+
+button.addimage{
+    height: 25px;
+    width: 25px;
+    float:left;
+    border-radius: 30px;
+    text-align: center;
+    border: 0;
+    outline: none;
+    margin-top: 7px;
+    margin-left: 10px;
+    background-color:#494949;
+    color: white;
+}
+
+</style>
 </head>
 
 
-<body style="background-color:#111;">
+<body style="background-color:#17181c;">
 
     <div class='row m-0'>
 
@@ -43,32 +111,54 @@
 
 
         <!-- Centered Content -->
-        <div class='col-sm-8' style="overflow: hidden; color:white; background-color:#111;">
+        <div class='centered-div col-sm-8' style="overflow: hidden; color:white; background-color:#17181c;">
 
 
-            <div id='newmsg' class="alert alert-dark alert-dismissible fade show" role="alert" style="position:fixed; opacity:70%;">
+            <div id='newmsg' class="alert alert-dark alert-dismissible fade show" role="alert" style="position:fixed; opacity:90%;">
               <strong>New Messages</strong>
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
 
-
+            <!-- Hide message intially when loading page... -->
             <script>$('#newmsg').hide()</script>
 
-            <div class="p-3 mb-2 bg-dark text-light">
+            <div class="middle-div p-3 mb-2 text-light">
 
-            <div class="chat-log" id="chat-log"></div>
+                <div class="chat-log" id="chat-log"></div>
 
-                <input class="chat-message-input" placeholder=" Press enter to send..." id="chat-message-input" type="text">                
-                    <button id="chat-message-submit" hidden type="button">
-                        <i class="icon-chevron-right"></i>
-                    </button>
-                </input>
+                <div class="input-holder">
 
 
-            </div>    
 
+
+                    <!-- TO DO -->
+                    <!-- Not visible... -->
+                    <form id="image_form" enctype="multipart/form-data">
+                        
+                        {% csrf_token %}
+                    
+                        <label for="id_content" hidden>Content:</label>
+                    
+                        <input type="text" name="content" required="" id="id_content" hidden>
+                    
+                        <input type="file" name="image" accept="image/*" id="id_image" hidden>
+                        
+                        <input class="btn btn-primary" id="submit_form" type="submit" value="submit" hidden>
+
+                    </form>
+
+
+
+
+
+
+                    <button class="addimage"><i class="icon-plus" onclick="chooseFile()"></i></button>
+                    <div class="chat-message-input" id="chat-message-input" contenteditable="True" placeholder="Send a message..."></div>
+                    <button class="chat-message-submit" id="chat-message-submit" type="button" hidden><i class="icon-chevron-right"></i></button>
+                </div>
+            </div>
         </div>
 
 
@@ -84,7 +174,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js" integrity="sha512-SxQulwFs2B38bmUJtBSo9tD07MDrtCbY8me3AOZ14tRknCPTeMDLvCQV4ekhs8R0o9QPnW5HQanKfveexVcwLA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 
-<script>
+<script type="text/javascript">
 
     var objDiv = document.getElementById("chat-log");
 
@@ -95,13 +185,20 @@
         objDiv.scrollTop = objDiv.scrollHeight;
     }
 
-
     // Display older messages
     {% for message in messages %}
         document.getElementById('chat-log').innerHTML += "<img class='rounded-circle' width='40px' height='40px' src='{{ message.author.profile.image.url }}' style='margin-right:20px; margin-bottom: 10px; float:left;'>"
         document.getElementById('chat-log').innerHTML += '<small>{{ message.author }}</small><small> @{{ message.date_sent }}</small><br>'
-        document.getElementById('chat-log').innerHTML += '<p>{{ message.content|urlize}}</p>';
-        document.getElementById('chat-log').innerHTML += '<hr style="opacity:5%;">'
+        document.getElementById('chat-log').innerHTML += '<p class="message">{{message.content|urlize|linebreaksbr}}</p>';
+
+        {% if message.image %}
+
+            document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + '{{message.image.url}}' + '">');
+
+        {% endif %}
+
+
+        document.getElementById('chat-log').innerHTML += '<hr style="opacity:5%; clear:left;">'
     {% endfor %}
 
 
@@ -115,28 +212,78 @@
         + '/'
     );
 
+    $('#image_form').on('submit', function (e) {
+            e.preventDefault();
+
+            $form = $(this)
+            var formData = new FormData(this);
+
+            $.ajax({
+                type: 'POST',
+                url: 'save_image_message/',
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+
+                success: function (data) {
+
+                    console.log(data["status"])
+                    if (data["status"] == "valid") {
+                        
+                        console.log('It works!')
+
+                        //Send data to websocket!
+                        chatSocket.send(JSON.stringify({
+                            'command': 'image',
+                            'message': data['message'],
+                            'user_id': data['user'],
+                            'image_url': data['image_url'],
+                            'date_sent': data['date_sent'],
+                        }));
+
+                    }
+                    if (data["status"] == "invalid") {
+                        console.log('oh no!')
+                        // $("#form-error").html(data["message"]);
+                        // $("#client_id").addClass("is-invalid")
+                    }
+                },
+                // error: function () {
+                //     alert("Error!")
+                // }
+            })
+
+        })
+
+    function chooseFile(){
+        document.querySelector('#id_image').click();
+    }
+
     //Message received from websocket
     chatSocket.onmessage = function(e) {
-        var audio = new Audio('https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3');
-        
-        // var chat_height = objDiv.offsetHeight;
-
-        // console.log(objDiv.offsetHeight.toFixed() - objDiv.scrollTop.toFixed())
+        // var audio = new Audio('notification.mp3');
+        // audio.play();
 
         //Check if scroll bar is near bottom before new message
         at_bottom = objDiv.scrollTop.toFixed() >= (objDiv.scrollHeight.toFixed() - 800);
 
         const data = JSON.parse(e.data);
-        document.getElementById('chat-log').innerHTML += ("<img class='rounded-circle' width='40px' height='40px' src='" + data.user_image +"' style='margin-right:20px; margin-bottom: 10px; float:left;'>");
+        document.getElementById('chat-log').innerHTML += ("<img class='rounded-circle' width='40px' height='40px' src='" + data.user_image +"' style='margin-right:20px; margin-bottom: 20px; float:left;'>");
         document.getElementById('chat-log').innerHTML += ('<small>' + data.username + '</small><small> @' + data.date_sent + '</small><br>')
-        document.getElementById('chat-log').innerHTML += (data.message + '<br>');
-        document.getElementById('chat-log').innerHTML += '<hr style="opacity:5%;">';
+        document.getElementById('chat-log').innerHTML += ('<p class="message">' + data.message + '</p>');
+
+        
+        if(typeof data.image_url !== 'undefined'){
+            document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + data.image_url + '">');
+        }
+
+        document.getElementById('chat-log').innerHTML += '<hr style="opacity:5%; clear:left;">';
 
 
         if(data.username != '{{ user.username}}'){
-            audio.play();
+            // audio.play();
         }
-
 
         if(at_bottom){
             $('#newmsg').hide()
@@ -155,27 +302,58 @@
 
 
     document.querySelector('#chat-message-input').focus();
-    document.querySelector('#chat-message-input').onkeyup = function(e) {
-        if (e.keyCode === 13) {  // enter, return
-            document.querySelector('#chat-message-submit').click();
-        }
 
+    document.querySelector('#chat-message-input').onkeydown = function(e) {
+       // User hits enter key and is not holding shift
+       if (e.keyCode === 13 && event.shiftKey != 1) {
+
+            //This prevents the div from expanding
+            e.preventDefault()
+        }
+    };
+
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.keyCode === 13 && event.shiftKey != 1) {  // enter without holding shift
+
+            //If image file was selected
+            if($('#id_image').val().length){
+
+
+                // Set value of input field from text from input field
+                document.getElementById("id_content").value = document.getElementById('chat-message-input').innerHTML;
+
+                // Submit form
+                document.querySelector('#submit_form').click()
+
+                // Maybe get data? IDK
+
+            }else{
+
+                //Click submit button
+                document.querySelector('#chat-message-submit').click();
+
+            }
+
+            // Clear input field
+            document.getElementById('chat-message-input').innerHTML='';
+
+        };
     };
 
     document.querySelector('#chat-message-submit').onclick = function(e) {
 
-        const messageInputDom = document.querySelector('#chat-message-input');
-        const message = messageInputDom.value;
+        var message = document.getElementById('chat-message-input').innerHTML;
 
-        // Check if message is blank before submission
-        if(message.match(/[a-z]/i)){
+        message = message.replaceAll('&nbsp;', ' ')
 
+        // Check if message is blank before submission, or contains &nbsp
+        if(message.replace(/\s/g, '').length != 0){
             chatSocket.send(JSON.stringify({
+                'command': '',
                 'message': message,
                 'user_id': '{{ user.id }}',
                 'net_id': '{{ net_id }}'
             }));
-            messageInputDom.value = '';
         }
     };
 </script>

@@ -39,14 +39,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         user_id = data['user_id']
         message = data['message']
-        
-        # Urlize message for real-time chat
-        message=urlize(message)
 
         if data['command'] == 'image':
 
             image_url = data['image_url']
-            date_sent =data['date_sent']
+            date_sent = data['date_sent']
+            message_id = data['message_id'] 
+
+            # Put in <br> where \n exists for real-time chat
+            message=linebreaksbr(message)
+
+            # Urlize message for real-time chat
+            message=urlize(message)
 
             # Send message to net group
             await self.channel_layer.group_send(
@@ -54,6 +58,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'image_message',
                     'message': message,
+                    'message_id': message_id,
                     'user_id': user_id,
                     'image_url': image_url,
                     'date_sent': date_sent
@@ -70,11 +75,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             message=message.replace("</div>","")
             message=message.replace("<br>", "\n")
 
-            # Save to database
-            await self.save_message(net_id, user_id, message)
+            # Save to database and get message id
+            message_id = await self.save_message(net_id, user_id, message)
 
             # Put in <br> where \n exists for real-time chat
             message=linebreaksbr(message)
+
+            # Urlize message for real-time chat
+            message=urlize(message)
 
             # Send message to net group
             await self.channel_layer.group_send(
@@ -83,6 +91,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'type': 'chat_message',
                     'message': message,
                     'user_id': user_id,
+                    'message_id': message_id
                 }
             )
 
@@ -91,6 +100,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         message = event['message']
         user_id = event['user_id']
+        message_id = event['message_id']
 
         #Get username and profile pic url
         user_info = await self.get_user_info(user_id)
@@ -99,18 +109,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
         user_image = user_info[1]
 
         # Get date...
-        date_today = datetime.date.today()
-        month = date_today.strftime("%B") 
-        day =  date_today.strftime("%d") 
-        year = date_today.today().strftime("%Y")  
-        hour = str(datetime.datetime.now().hour) 
-        minute = str(datetime.datetime.now().minute)
-        time = datetime.datetime.strptime(f'{hour}:{minute}','%H:%M').strftime('%I:%M %p').replace('0','')
-        date_sent = month + ' ' + day + ', ' + year + ', ' + str(time).lower()
+        date = datetime.datetime.now()
+        date_sent = date.strftime("%B %d, %Y, %H:%M ")
+        date_sent + date.strftime('%p').lower().replace("", ".")[1:]
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
             'message': message,
+            'message_id':message_id,
             'date_sent': date_sent,
             'username': username,
             'user_image': user_image
@@ -121,6 +127,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         message = event['message']
         user_id = event['user_id']
+        message_id = event['message_id']
 
         #Get username and profile pic url
         user_info = await self.get_user_info(user_id)
@@ -137,7 +144,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'date_sent': date_sent,
             'username': username,
             'user_image': user_image,
-            'image_url': image_url
+            'image_url': image_url,
+            'message_id': message_id
         }))
 
 
@@ -149,20 +157,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         return (username, image_url)
 
-    @database_sync_to_async
-    def get_last_message(self, user_id):
-        num = len(Message.objects.filter(author=User.objects.get(id=int(user_id))))
-        num -= 1
-        return Message.objects.filter(author=User.objects.get(id=int(user_id)))[num]
+    # @database_sync_to_async
+    # def get_last_message(self, user_id):
+    #     num = len(Message.objects.filter(author=User.objects.get(id=int(user_id))))
+    #     num -= 1
+    #     return Message.objects.filter(author=User.objects.get(id=int(user_id)))[num]
 
     @database_sync_to_async
     def save_message(self, net_id, user_id, message):
 
-        return Message.objects.create(net= Net.objects.get(id=net_id),
-                                      author = User.objects.get(id=user_id),
-                                      date_sent = datetime.datetime.now(),
-                                      content = message, 
-                                      )
+        message = Message(net= Net.objects.get(id=net_id),
+                          author = User.objects.get(id=user_id),
+                          date_sent = datetime.datetime.now(),
+                          content = message, 
+                          )
+
+        message.save()
+
+        return message.id
 
 
 

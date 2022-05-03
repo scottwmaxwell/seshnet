@@ -14,7 +14,7 @@ form.image_form{
 }
 
 div.chat-log {
-    min-height: 60vh;
+    min-height: 90vh;
     max-height: 81vh;
     max-width: 99%;
     height: 30%;
@@ -27,11 +27,11 @@ div.chat-log {
 }
 
 img.image_message{
-    /*margin-left: 60px;*/
-
+    margin-left: 60px; !important
     max-height: 300px;
     height: 70%;
     width: auto;
+    max-width: 80%;
 }
 
 div.middle-div{
@@ -77,6 +77,7 @@ button.chat-message-submit{
 
 p.message{
     margin-left: 60px;
+    /*margin-bottom: 12px;*/
 }
 
 .chat-message-input:empty:before {
@@ -114,7 +115,7 @@ button.addimage{
         <div class='centered-div col-sm-8' style="overflow: hidden; color:white; background-color:#17181c;">
 
 
-            <div id='newmsg' class="alert alert-dark alert-dismissible fade show" role="alert" style="position:fixed; opacity:90%;">
+            <div id='newmsg' class="alert alert-dark alert-dismissible fade show" role="alert" style="position:fixed; opacity:100%;">
               <strong>New Messages</strong>
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -130,35 +131,21 @@ button.addimage{
 
                 <div class="input-holder">
 
-
-
-
-                    <!-- TO DO -->
-                    <!-- Not visible... -->
+                    <!-- This form is for images uploads -->
                     <form id="image_form" enctype="multipart/form-data">
-                        
                         {% csrf_token %}
-                    
                         <label for="id_content" hidden>Content:</label>
-                    
                         <input type="text" name="content" required="" id="id_content" hidden>
-                    
                         <input type="file" name="image" accept="image/*" id="id_image" hidden>
-                        
-                        <input class="btn btn-primary" id="submit_form" type="submit" value="submit" hidden>
-
+                        <input class="btn btn-primary" id="submit_form"  type="submit" value="submit" hidden>
                     </form>
-
-
-
-
-
 
                     <button class="addimage"><i class="icon-plus" onclick="chooseFile()"></i></button>
                     <div class="chat-message-input" id="chat-message-input" contenteditable="True" placeholder="Send a message..."></div>
                     <button class="chat-message-submit" id="chat-message-submit" type="button" hidden><i class="icon-chevron-right"></i></button>
                 </div>
             </div>
+
         </div>
 
 
@@ -185,21 +172,36 @@ button.addimage{
         objDiv.scrollTop = objDiv.scrollHeight;
     }
 
+
+    var last_message_author = "";
+    var last_message_date =  "";
+
     // Display older messages
     {% for message in messages %}
-        document.getElementById('chat-log').innerHTML += "<img class='rounded-circle' width='40px' height='40px' src='{{ message.author.profile.image.url }}' style='margin-right:20px; margin-bottom: 10px; float:left;'>"
-        document.getElementById('chat-log').innerHTML += '<small>{{ message.author }}</small><small> @{{ message.date_sent }}</small><br>'
-        document.getElementById('chat-log').innerHTML += '<p class="message">{{message.content|urlize|linebreaksbr}}</p>';
 
-        {% if message.image %}
+        if (last_message_author == "{{message.author}}" && last_message_date == "{{message.date_sent}}"){
+            
+            document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
+            {% if message.image %}
+                document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + '{{message.image.url}}' + '">');
+            {% endif %}
 
-            document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + '{{message.image.url}}' + '">');
+        } else {
+            document.getElementById('chat-log').innerHTML += "<img class='rounded-circle' width='40px' height='40px' src='{{ message.author.profile.image.url }}' style='margin-right:20px; margin-bottom: 10px; float:left;'>"
+            document.getElementById('chat-log').innerHTML += '<small>{{ message.author }}</small><small> @{{ message.date_sent }}</small><br>'
+            document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
 
-        {% endif %}
+            {% if message.image %}
+                document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + '{{message.image.url}}' + '">');
+            {% endif %}
+        };
 
+        last_message_author = "{{ message.author }}";
+        last_message_date = "{{ message.date_sent }}";
 
-        document.getElementById('chat-log').innerHTML += '<hr style="opacity:5%; clear:left;">'
     {% endfor %}
+
+    
 
 
     const netID = JSON.parse(document.getElementById('net-id').textContent);
@@ -240,7 +242,11 @@ button.addimage{
                             'user_id': data['user'],
                             'image_url': data['image_url'],
                             'date_sent': data['date_sent'],
+                            'message_id':data['message_id']
                         }));
+
+                        resetForm();
+
 
                     }
                     if (data["status"] == "invalid") {
@@ -260,34 +266,58 @@ button.addimage{
         document.querySelector('#id_image').click();
     }
 
+    function resetForm(){
+        document.getElementById('image_form').reset()
+    }
+
     //Message received from websocket
     chatSocket.onmessage = function(e) {
         // var audio = new Audio('notification.mp3');
         // audio.play();
 
         //Check if scroll bar is near bottom before new message
-        at_bottom = objDiv.scrollTop.toFixed() >= (objDiv.scrollHeight.toFixed() - 800);
+        at_bottom = objDiv.scrollTop.toFixed() >= (objDiv.scrollHeight.toFixed() - 1800);
 
         const data = JSON.parse(e.data);
-        document.getElementById('chat-log').innerHTML += ("<img class='rounded-circle' width='40px' height='40px' src='" + data.user_image +"' style='margin-right:20px; margin-bottom: 20px; float:left;'>");
-        document.getElementById('chat-log').innerHTML += ('<small>' + data.username + '</small><small> @' + data.date_sent + '</small><br>')
-        document.getElementById('chat-log').innerHTML += ('<p class="message">' + data.message + '</p>');
 
-        
-        if(typeof data.image_url !== 'undefined'){
-            document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + data.image_url + '">');
+        // If author and date is the same as the previous message, just combine it (no profile pic and user info)
+        if(last_message_author == data.username && last_message_date == data.date_sent){
+
+            document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
+
+            if(typeof data.image_url !== 'undefined'){
+                document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + data.image_url + '">');
+            };
+
+
+        // show username, profile pic, etc.
+        }else{
+
+            document.getElementById('chat-log').innerHTML += ("<img class='rounded-circle' width='40px' height='40px' src='" + data.user_image +"' style='margin-right:20px; margin-bottom: 10px; float:left;'>");
+            document.getElementById('chat-log').innerHTML += ('<small>' + data.username + '</small><small> @' + data.date_sent + '</small><br>')
+            document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
+
+            // If there is an image, show it
+            if(typeof data.image_url !== 'undefined'){
+                document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + data.image_url + '">');
+            };
         }
 
-        document.getElementById('chat-log').innerHTML += '<hr style="opacity:5%; clear:left;">';
+        //Reset variables
+        last_message_author = data.username
+        last_message_date = data.date_sent
 
-
+        // If a new message came in and it's not the current user, play sound notification
         if(data.username != '{{ user.username}}'){
             // audio.play();
         }
 
+        // If at bottom, scroll down automatically
         if(at_bottom){
             $('#newmsg').hide()
             objDiv.scrollTop = objDiv.scrollHeight;
+
+        // Otherwise, show a notification that there is a new message
         }else{
             //show alert for new messages if you can't see them
             if(data.username != '{{ user.username}}'){
@@ -322,14 +352,12 @@ button.addimage{
                 // Set value of input field from text from input field
                 document.getElementById("id_content").value = document.getElementById('chat-message-input').innerHTML;
 
-                // Submit form
+                // Submit form for image message
                 document.querySelector('#submit_form').click()
-
-                // Maybe get data? IDK
 
             }else{
 
-                //Click submit button
+                //Click submit button for regular message
                 document.querySelector('#chat-message-submit').click();
 
             }

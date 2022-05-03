@@ -10,7 +10,6 @@ import datetime
 def home(request):
 	return render(request, 'nets/home.html')
 
-
 @login_required
 def index(request):
 
@@ -50,9 +49,11 @@ def save_image_form(request, net_id):
 			        "content": form.cleaned_data["content"], 
 			        "image": form.cleaned_data["image"]}
 
-			print("\n\n\n\n")
-			print(data["image"])
-			print("\n\n\n")
+
+			data['content'] = data['content'].replace("<div>","")
+			data['content'] = data['content'].replace("</div>","")
+			data['content'] = data['content'].replace("<br>","\n")
+
 
 			# Create a Message with the data...
 			message = Message(net=Net.objects.get(id=net_id),
@@ -73,7 +74,8 @@ def save_image_form(request, net_id):
 				    "date_sent": message.date_sent,
 				    "message":message.content,
 				    "image_url":message.image.url,
-				    "user": message.author.id
+				    "user": message.author.id,
+				    "message_id": message.id
 					}
 
 		else:

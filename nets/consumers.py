@@ -131,12 +131,28 @@ class ChatConsumer(AsyncWebsocketConsumer):
         username = user_info[0]
         user_image = user_info[1]
 
-        # Get date...
+        # Get date
         date = datetime.datetime.now()
-        date_sent = date.strftime("%B %d, %Y, %H:%M ")
-        date_sent += date.strftime('%p').lower().replace("", ".")[1:]
 
-        print(date_sent)
+        # Month
+        date_sent = date.strftime("%B ")
+
+        # Day + Year
+        day_year = date.strftime("%d, %Y, ")
+
+        if day_year[0] == "0":
+            day_year = day_year[1:]
+            
+        date_sent += day_year
+
+        # Hour
+        hour = date.strftime("%H:%M")
+        if hour[0] == "0":
+            hour = hour[1:]
+        date_sent += hour + ' '
+        
+        # AM/PM  
+        date_sent += date.strftime('%p').lower().replace("", ".")[1:]
 
         # Send message to WebSocket
         await self.send(text_data=json.dumps({
@@ -181,12 +197,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         image_url = User.objects.get(id=user_id).profile.image.url
 
         return (username, image_url)
-
-    # @database_sync_to_async
-    # def get_last_message(self, user_id):
-    #     num = len(Message.objects.filter(author=User.objects.get(id=int(user_id))))
-    #     num -= 1
-    #     return Message.objects.filter(author=User.objects.get(id=int(user_id)))[num]
 
     @database_sync_to_async
     def save_message(self, net_id, user_id, message):

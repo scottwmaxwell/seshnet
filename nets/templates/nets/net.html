@@ -32,7 +32,7 @@ img.image_message{
     max-height: 300px;
     height: 70%;
     width: auto;
-    max-width: 80%;
+    max-width: 35%;
     padding-bottom: 20px;
     padding-top: 20px;
 }
@@ -56,7 +56,7 @@ div.chat-message-input{
     border: 0;
     outline: none;
     border-radius: 8px;
-    margin-left: 50px;
+    margin-left: 70px;
     margin-right: 50px;
     padding-top: 8px;
     padding-bottom: 8px;
@@ -105,6 +105,14 @@ button.addimage{
     color: white;
 }
 
+.attachment{
+    float:left;
+    border: 0;
+    outline: none;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
 </style>
 </head>
 
@@ -149,13 +157,13 @@ button.addimage{
                     </form>
 
                     <button class="addimage"><i class="icon-plus" onclick="chooseFile()"></i></button>
+                    <i class="attachment icon-picture" id="attachment-icon" hidden></i>
                     <div class="chat-message-input" id="chat-message-input" contenteditable="True" placeholder="Send a message..."></div>
                     <button class="chat-message-submit" id="chat-message-submit" type="button" hidden><i class="icon-chevron-right"></i></button>
                 </div>
             </div>
 
         </div>
-
 
         <!-- Buffer to center content -->
         <div class='col-sm-2'></div>
@@ -190,7 +198,7 @@ button.addimage{
             
             document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
             {% if message.image %}
-                document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + '{{message.image.url}}' + '"><br>');
+                document.getElementById('chat-log').innerHTML += ('<a href="{{message.image.url}}" target="_blank"><img class="image_message" src="' + '{{message.image.url}}' + '"></a><br>');
             {% endif %}
 
         } else {
@@ -200,7 +208,7 @@ button.addimage{
             document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
 
             {% if message.image %}
-                document.getElementById('chat-log').innerHTML += ('<br><img class="image_message" src="' + '{{message.image.url}}' + '"><br>');
+                document.getElementById('chat-log').innerHTML += ('<br><a href="{{message.image.url}}" target="_blank"><img class="image_message" src="' + '{{message.image.url}}' + '"></a><br>');
             {% endif %}
         };
 
@@ -270,17 +278,28 @@ button.addimage{
 
         })
 
+    //Called after user selects custom button to select hidden "choose file" button
     function chooseFile(){
         document.querySelector('#id_image').click();
     }
 
+    // Called after user submits form via ajax
     function resetForm(){
         document.getElementById('image_form').reset()
+        document.getElementById('attachment-icon').setAttribute('hidden', 'True')
     }
 
+    // Show attachment is selected after user has chosen it
+    $('#id_image').on('change', function(){
+        //TODO 
+        document.getElementById('attachment-icon').removeAttribute("hidden")
+        console.log('attachment chosen');
+    })
+
+    //Variable Used for timing out who is typing...
     let timeout;
 
-    //Message received from websocket
+    //data received from websocket
     chatSocket.onmessage = function(e) {
         // var audio = new Audio('notification.mp3');
         // audio.play();
@@ -326,7 +345,7 @@ button.addimage{
                 document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
 
                 if(typeof data.image_url !== 'undefined'){
-                    document.getElementById('chat-log').innerHTML += ('<img class="image_message" src="' + data.image_url + '"><br>');
+                    document.getElementById('chat-log').innerHTML += ('<a target="_blank" href="' + data.image_url + '"><img class="image_message" src="' + data.image_url + '"></a><br>');
                 };
 
 
@@ -339,7 +358,7 @@ button.addimage{
 
                 // If there is an image, show it
                 if(typeof data.image_url !== 'undefined'){
-                    document.getElementById('chat-log').innerHTML += ('<br><img class="image_message" src="' + data.image_url + '"><br>');
+                    document.getElementById('chat-log').innerHTML += ('<br><a target="_blank" href="' + data.image_url + '"><img class="image_message" src="' + data.image_url + '"></a><br>');
                 };
             }
 
@@ -389,9 +408,15 @@ button.addimage{
             //If image file was selected
             if($('#id_image').val().length){
 
+                console.log('here')
 
                 // Set value of input field from text from input field
                 document.getElementById("id_content").value = document.getElementById('chat-message-input').innerHTML;
+
+                if(document.getElementById("id_content").value == ''){
+                    document.getElementById("id_content").value = ' ';
+                }
+
 
                 // Submit form for image message
                 document.querySelector('#submit_form').click()

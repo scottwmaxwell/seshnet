@@ -36,6 +36,7 @@ urlpatterns = [
     path('net/index/', net_views.index, name='net_index'),
     path('net/<str:net_id>/', net_views.net, name='net'),
     path('net/<str:net_id>/save_image_message/', net_views.save_image_form, name="net_save_image"),
+    path('net/<str:net_id>/get_messages/', net_views.get_messages, name="get_messages"),
     path('directmessage/index/', dm_views.index, name='dm_index'),
     path('directmessage/<str:dm_id>/', dm_views.directmessage, name='directmessage'),
 ]

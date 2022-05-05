@@ -9,13 +9,37 @@
 
 <style>
 
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #1d1e23; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #111; 
+  border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+
 form.image_form{
     opacity: 0%;
 }
 
 div.chat-log {
-    min-height: 90vh;
-    max-height: 81vh;
+    min-height: 72vh;
+    max-height: 75vh;
     max-width: 99%;
     height: 30%;
     overflow-wrap: break-word;
@@ -24,15 +48,14 @@ div.chat-log {
     font-size: 14px;
     position: relative;
     text-align: left;
-    padding-top: 100px;
 }
 
 img.image_message{
     margin-left: 60px; !important
-    max-height: 300px;
-    height: 70%;
+    /*max-height: 300px;*/
+    /*height: 70%;*/
     width: auto;
-    max-width: 35%;
+    max-width: 40%;
     padding-bottom: 20px;
     padding-top: 20px;
 }
@@ -196,20 +219,25 @@ button.addimage{
 
         if (last_message_author == "{{message.author}}" && last_message_date == "{{message.date_sent}}"){
             
-            document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
+            document.getElementById('chat-log').innerHTML += '<div id="message-container"><p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
             {% if message.image %}
-                document.getElementById('chat-log').innerHTML += ('<a href="{{message.image.url}}" target="_blank"><img class="image_message" src="' + '{{message.image.url}}' + '"></a><br>');
+                document.getElementById('chat-log').innerHTML += ('<a href="{{message.image.url}}" target="_blank"><img class="image_message" src="' + '{{message.image.url}}' + '"></a><br></div>');
+            {% else %}
+                document.getElementById('chat-log').innerHTML += '</div>'
             {% endif %}
 
         } else {
             document.getElementById('chat-log').innerHTML += "<hr style='opacity:0%;'>"
             document.getElementById('chat-log').innerHTML += "<img class='rounded-circle' width='40px' height='40px' src='{{ message.author.profile.image.url }}' style='margin-right:20px; margin-bottom: 10px; float:left;'>"
-            document.getElementById('chat-log').innerHTML += '<small>{{ message.author }}</small><small> @{{ message.date_sent }}</small><br>'
-            document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
+            document.getElementById('chat-log').innerHTML += '<small id="username">{{ message.author }}</small><small id="date_sent"> @{{ message.date_sent }}</small><br>'
+            document.getElementById('chat-log').innerHTML += '<div id="message-container"><p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
 
             {% if message.image %}
-                document.getElementById('chat-log').innerHTML += ('<br><a href="{{message.image.url}}" target="_blank"><img class="image_message" src="' + '{{message.image.url}}' + '"></a><br>');
+                document.getElementById('chat-log').innerHTML += ('<br><a href="{{message.image.url}}" target="_blank"><img class="image_message" src="' + '{{message.image.url}}' + '"></a><br></div>');
+            {% else %}
+                document.getElementById('chat-log').innerHTML += '</div>'
             {% endif %}
+            
         };
 
         last_message_author = "{{ message.author }}";
@@ -246,10 +274,8 @@ button.addimage{
 
                 success: function (data) {
 
-                    console.log(data["status"])
                     if (data["status"] == "valid") {
                         
-                        console.log('It works!')
 
                         //Send data to websocket!
                         chatSocket.send(JSON.stringify({
@@ -266,9 +292,7 @@ button.addimage{
 
                     }
                     if (data["status"] == "invalid") {
-                        console.log('oh no!')
-                        // $("#form-error").html(data["message"]);
-                        // $("#client_id").addClass("is-invalid")
+                        console.log('Failed to upload image')
                     }
                 },
                 // error: function () {
@@ -293,7 +317,6 @@ button.addimage{
     $('#id_image').on('change', function(){
         //TODO 
         document.getElementById('attachment-icon').removeAttribute("hidden")
-        console.log('attachment chosen');
     })
 
     //Variable Used for timing out who is typing...
@@ -305,7 +328,7 @@ button.addimage{
         // audio.play();
 
         //Check if scroll bar is near bottom before new message
-        at_bottom = objDiv.scrollTop.toFixed() >= (objDiv.scrollHeight.toFixed() - 1800);
+        at_bottom = objDiv.scrollTop.toFixed() >= (objDiv.scrollHeight.toFixed() - 3000);
 
         const data = JSON.parse(e.data);
 
@@ -342,10 +365,12 @@ button.addimage{
             // If author and date is the same as the previous message, just combine it (no profile pic and user info)
             if(last_message_author == data.username && last_message_date == data.date_sent){
 
-                document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
+                document.getElementById('chat-log').innerHTML += ('<div id="message-container"><p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
 
                 if(typeof data.image_url !== 'undefined'){
-                    document.getElementById('chat-log').innerHTML += ('<a target="_blank" href="' + data.image_url + '"><img class="image_message" src="' + data.image_url + '"></a><br>');
+                    document.getElementById('chat-log').innerHTML += ('<a target="_blank" href="' + data.image_url + '"><img class="image_message" src="' + data.image_url + '"></a><br></div>');
+                }else{
+                    document.getElementById('chat-log').innerHTML+='</div>'
                 };
 
 
@@ -353,13 +378,16 @@ button.addimage{
             }else{
                 document.getElementById('chat-log').innerHTML += "<hr style='opacity:0%;'>"
                 document.getElementById('chat-log').innerHTML += ("<img class='rounded-circle' width='40px' height='40px' src='" + data.user_image +"' style='margin-right:20px; margin-bottom: 10px; float:left;'>");
-                document.getElementById('chat-log').innerHTML += ('<small>' + data.username + '</small><small> @' + data.date_sent + '</small><br>')
-                document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
+                document.getElementById('chat-log').innerHTML += ('<small id="username">' + data.username + '</small><small id="date_sent"> @' + data.date_sent + '</small><br>')
+                
+                document.getElementById('chat-log').innerHTML += ('<div id="message-container"><p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
 
                 // If there is an image, show it
                 if(typeof data.image_url !== 'undefined'){
-                    document.getElementById('chat-log').innerHTML += ('<br><a target="_blank" href="' + data.image_url + '"><img class="image_message" src="' + data.image_url + '"></a><br>');
-                };
+                    document.getElementById('chat-log').innerHTML += ('<br><a target="_blank" href="' + data.image_url + '"><img class="image_message" src="' + data.image_url + '"></a><br></div>');
+                }else{
+                    document.getElementById('chat-log').innerHTML+='</div>';
+                }
             }
 
             //Reset variables
@@ -373,7 +401,7 @@ button.addimage{
 
             // If at bottom, scroll down automatically
             if(at_bottom){
-                $('#newmsg').hide()
+                
                 objDiv.scrollTop = objDiv.scrollHeight;
 
             // Otherwise, show a notification that there is a new message
@@ -408,13 +436,12 @@ button.addimage{
             //If image file was selected
             if($('#id_image').val().length){
 
-                console.log('here')
-
                 // Set value of input field from text from input field
                 document.getElementById("id_content").value = document.getElementById('chat-message-input').innerHTML;
 
+                // Form will only be valid if text is sent... so if input is blank, then add some text (so that users can send messages without adding text)
                 if(document.getElementById("id_content").value == ''){
-                    document.getElementById("id_content").value = ' ';
+                    document.getElementById("id_content").value = 'Image:';
                 }
 
 
@@ -458,7 +485,6 @@ button.addimage{
         }
     };
 
-
     function removeWhoIsTyping(user_id){
 
         if (user_id === ''){
@@ -468,10 +494,74 @@ button.addimage{
 
             string_to_remove = user_id + ' is typing'
             document.getElementById('who-is-typing').innerHTML = document.getElementById('who-is-typing').innerHTML.replace(string_to_remove, '')
-            console.log('cleared who is typing!')
         }
+    };
+
+
+// DETECT when scroll at the top of chat-log
+$('#chat-log').scroll(function() {
+    var pos = $('#chat-log').scrollTop();
+    if (pos == 0) {
+        
+        // Get id of message at top of chat log
+        var message_id = document.querySelector("#chat-log p").id;
+        
+        //Save off current height of chat-log before adding new messages
+        var height = objDiv.scrollHeight
+
+            $.ajax({
+                type: 'GET',
+                url: 'get_messages/',
+                data: {messageID: message_id},
+
+                success: function (data) {
+                    
+                    if (data['status'] != "no messages") {
+                    // You have to load in each element backwards from how you normally would because of prepend
+                        for (let i = 0; i < Object.keys(data).length; i++) {
+
+                          //image
+                          if (data[i]['image_url']){
+                            $('#chat-log').prepend($('<br><a target="_blank" href="' + data[i]['image_url'] + '"><img class="image_message" src="' + data[i]['image_url'] + '"></a><br>').fadeIn('slow'));
+                          }else{
+                             $('#chat-log').prepend($('</div>').fadeIn('slow'));
+                          }
+
+                          // Message content
+                          $('#chat-log').prepend($('<div id="message-container"><p class="message" id="' + data[i]['message_id'] + '"' + '>' + data[i]['message'] + '</p>').fadeIn('slow'));
+
+                          //Add container
+                          $('#chat-log').prepend($('<div id="message-container">').fadeIn('slow'));
+
+                          // User/Message info
+                          $('#chat-log').prepend($('<small id="username">' + data[i]['user'] + '</small><small id="date_sent">@' + data[i]['date_sent'] + '</small><br>').fadeIn('slow'));
+
+
+                          // User image
+                          $('#chat-log').prepend($("<img class='rounded-circle' width='40px' height='40px' src='" + data[i]['pf_pic_url'] +"' style='margin-right:20px; margin-bottom: 10px; float:left;'>").fadeIn('slow'));
+
+
+                          $('#chat-log').prepend($("<hr style='opacity:0%;'>").fadeIn('slow'));
+                        } 
+                    }
+
+                    //Put scroll bar somewhere else.
+                   height_difference = objDiv.scrollHeight - height
+                    
+                   if (height_difference > 100){
+                        objDiv.scrollTop = height_difference;
+                   }
+                },
+                error: function () {
+                    console.log("Failed to get older messages")
+                }
+            })
+
+
+
     }
+});
 
 </script>
 
-{% endblock content %}
+{% endblock content %}  

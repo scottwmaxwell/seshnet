@@ -24,8 +24,11 @@ def index(request):
 def net(request, net_id):
 
 	form = UploadImageMessage
-	nets = Net.objects.all()
-	messages = Message.objects.filter(net=Net.objects.get(id=net_id))
+	nets = Net.objects.all() # This is for the navbar
+
+	# Get last 50 messages
+	messages = Message.objects.filter(net=Net.objects.get(id=net_id))[::-1][:50][::-1]
+
 	context = {
 		'net_id': net_id,
 		'net_name': Net.objects.get(id=net_id).title,
@@ -36,9 +39,72 @@ def net(request, net_id):
 	return render(request, 'nets/net.html', context)
 
 
+def get_messages(request, net_id):
+	
+	if request.method == 'GET':
+		
+		messageID = request.GET.get('messageID', None)
+		
+		# get 50 more messages starting from the provided messageID
+		messages = Message.objects.filter(id__lte=messageID, net=Net.objects.get(id=net_id))[::-1][:20][1:]
+	
+		# print("\n\n\n\n LENGTH: ",len(messages))
+
+		if len(messages):
+			JsonResponse({"status":"no messages"})
+
+		message_data = {}
+
+		count = 0
+		for message in messages:
+
+			date = message.date_sent
+
+			# Month
+			date_sent = date.strftime("%B ")
+
+			# Day + Year
+			day_year = date.strftime("%d, %Y, ")
+
+			if day_year[0] == "0":
+			    day_year = day_year[1:]
+			    
+			date_sent += day_year
+
+			# Hour
+			hour = date.strftime("%H:%M")
+			if hour[0] == "0":
+			    hour = hour[1:]
+			date_sent += hour + ' '
+
+			# AM/PM  
+			date_sent += date.strftime('%p').lower().replace("", ".")[1:]
+
+
+			if message.image:
+
+				message_data[count] = {"message_id": message.id,
+									   "message":    message.content,
+									   "image_url":  message.image.url,
+									   "user":       message.author.username,
+									   "date_sent":  date_sent,
+									   "pf_pic_url": message.author.profile.image.url
+									   }
+			else:
+				message_data[count] = {"message_id": message.id,
+							           "message":    message.content,
+							           "image_url":  None,
+							           "user":       message.author.username,
+							           "date_sent":  date_sent,
+							           "pf_pic_url": message.author.profile.image.url
+									   }
+			count += 1
+
+		return JsonResponse(message_data)
+	return JsonResponse({"status":"fail"})
+
 
 def save_image_form(request, net_id):
-
 	if request.method == 'POST':
 		form = UploadImageMessage(request.POST, request.FILES)
 		if form.is_valid():
@@ -72,8 +138,27 @@ def save_image_form(request, net_id):
 
 			# Get date...
 			date = message.date_sent
-			date_sent = date.strftime("%B %d, %Y, %H:%M ")
+
+			# Month
+			date_sent = date.strftime("%B ")
+
+			# Day + Year
+			day_year = date.strftime("%d, %Y, ")
+
+			if day_year[0] == "0":
+			    day_year = day_year[1:]
+			    
+			date_sent += day_year
+
+			# Hour
+			hour = date.strftime("%H:%M")
+			if hour[0] == "0":
+			    hour = hour[1:]
+			date_sent += hour + ' '
+
+			# AM/PM  
 			date_sent += date.strftime('%p').lower().replace("", ".")[1:]
+
 
 
 			data = {

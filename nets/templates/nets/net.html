@@ -106,7 +106,9 @@ button.chat-message-submit{
 p.message{
     margin-left: 60px;
     margin-bottom: 5px;
+
 }
+
 
 .chat-message-input:empty:before {
     content: attr(placeholder);
@@ -127,6 +129,42 @@ button.addimage{
     color: white;
 }
 
+button.delete-message{
+
+    /* Positioning  */
+    
+    /*float:right;   */
+
+    /* Design */
+    border: 0;
+    outline: none;
+    border-radius: 30px;
+    text-align: center;
+    
+    /* Colors  */
+    background-color:#494949;
+    color: white;
+    opacity: 1%;
+
+
+}
+
+button.delete-message:hover{
+
+    opacity: 40%;
+    background-color:#111;
+    color: red;
+
+}
+
+#message-container{
+    display:inline;
+}
+
+
+
+
+
 .attachment{
     float:left;
     border: 0;
@@ -134,6 +172,8 @@ button.addimage{
     margin-top: 10px;
     margin-left: 10px;
 }
+
+
 
 </style>
 
@@ -195,6 +235,59 @@ button.addimage{
 </body>
 
 
+<!-- <button class="delete-message" id="{{message.id}}-delete">delete</button> -->
+
+<!-- SCRIPT FOR DISPLAYING MESSAGES -->
+<script>
+var last_message_author = "";
+var last_message_date =  "";
+
+{% for message in messages %}
+
+    if (last_message_author == "{{message.author}}" && last_message_date == "{{message.date_sent}}"){
+        
+
+        {% if message.author == user %}
+            document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage({{message.id}})">delete</button></p>';
+        {% else %}
+            document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
+        {% endif %}
+        
+
+        {% if message.image %}
+            document.getElementById('chat-log').innerHTML += ('<a href="{{message.image.url}}" target="_blank"><img class="image_message" src="' + '{{message.image.url}}' + '"></a><br></div>');
+        {% else %}
+            document.getElementById('chat-log').innerHTML += '</div>'
+        {% endif %}
+
+    } else {
+        document.getElementById('chat-log').innerHTML += "<hr style='opacity:0%;'>"
+        document.getElementById('chat-log').innerHTML += "<img class='rounded-circle' width='40px' height='40px' src='{{ message.author.profile.image.url }}' style='margin-right:20px; margin-bottom: 10px; float:left;'>"
+        document.getElementById('chat-log').innerHTML += '<small id="username">{{ message.author }}</small><small id="date_sent"> @{{ message.date_sent }}</small><br>'
+        
+
+        {% if message.author == user %}
+            document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage({{message.id}})">delete</button></p>';
+        {% else %}
+            document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
+        {% endif %}
+
+
+        {% if message.image %}
+            document.getElementById('chat-log').innerHTML += ('<br><a href="{{message.image.url}}" target="_blank"><img class="image_message" src="' + '{{message.image.url}}' + '"></a><br></div>');
+        {% else %}
+            document.getElementById('chat-log').innerHTML += '</div>'
+        {% endif %}
+        
+    };
+
+    last_message_author = "{{ message.author }}";
+    last_message_date = "{{ message.date_sent }}";
+
+{% endfor %}
+</script>
+
+
 {{ net_id|json_script:"net-id" }}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js" integrity="sha512-SxQulwFs2B38bmUJtBSo9tD07MDrtCbY8me3AOZ14tRknCPTeMDLvCQV4ekhs8R0o9QPnW5HQanKfveexVcwLA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -209,44 +302,6 @@ window.onload=function () {
     var objDiv = document.getElementById("chat-log");
     objDiv.scrollTop = objDiv.scrollHeight;
 }
-
-
-var last_message_author = "";
-var last_message_date =  "";
-
-// Display older messages
-{% for message in messages %}
-
-    if (last_message_author == "{{message.author}}" && last_message_date == "{{message.date_sent}}"){
-        
-        document.getElementById('chat-log').innerHTML += '<div id="message-container"><p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
-        {% if message.image %}
-            document.getElementById('chat-log').innerHTML += ('<a href="{{message.image.url}}" target="_blank"><img class="image_message" src="' + '{{message.image.url}}' + '"></a><br></div>');
-        {% else %}
-            document.getElementById('chat-log').innerHTML += '</div>'
-        {% endif %}
-
-    } else {
-        document.getElementById('chat-log').innerHTML += "<hr style='opacity:0%;'>"
-        document.getElementById('chat-log').innerHTML += "<img class='rounded-circle' width='40px' height='40px' src='{{ message.author.profile.image.url }}' style='margin-right:20px; margin-bottom: 10px; float:left;'>"
-        document.getElementById('chat-log').innerHTML += '<small id="username">{{ message.author }}</small><small id="date_sent"> @{{ message.date_sent }}</small><br>'
-        document.getElementById('chat-log').innerHTML += '<div id="message-container"><p class="message" id="{{ message.id }}">{{message.content|urlize|linebreaksbr}}</p>';
-
-        {% if message.image %}
-            document.getElementById('chat-log').innerHTML += ('<br><a href="{{message.image.url}}" target="_blank"><img class="image_message" src="' + '{{message.image.url}}' + '"></a><br></div>');
-        {% else %}
-            document.getElementById('chat-log').innerHTML += '</div>'
-        {% endif %}
-        
-    };
-
-    last_message_author = "{{ message.author }}";
-    last_message_date = "{{ message.date_sent }}";
-
-{% endfor %}
-
-
-
 
 const netID = JSON.parse(document.getElementById('net-id').textContent);
 
@@ -302,6 +357,30 @@ $('#image_form').on('submit', function (e) {
 
     })
 
+function deleteMessage(message_id){
+    // alert('Message Deleted! Not really..' + message_id)
+
+        $.ajax({
+            type: 'GET',
+            url: 'delete_message/',
+            data: {messageID: message_id},
+
+            success: function (data) {
+                console.log(data['status'])
+
+                // tell websocket that the message was deleted...
+                chatSocket.send(JSON.stringify({
+                    'command': 'delete',
+                    'message_id': message_id
+                }));
+
+            },
+            error: function () {
+                console.log("Failed to delete message")
+            }
+        })
+}
+
 //Called after user selects custom button to select hidden "choose file" button
 function chooseFile(){
     document.querySelector('#id_image').click();
@@ -332,8 +411,13 @@ chatSocket.onmessage = function(e) {
 
     const data = JSON.parse(e.data);
 
+    if (data.delete == "True"){
+
+        document.getElementById(data.message_id).innerHTML = ""
+
+
     // If someone is typing, display it
-    if (data.typing == "True"){
+    }else if (data.typing == "True"){
 
         // Only display to other users
         if (data.user_id != "{{ user.username }}"){
@@ -365,7 +449,11 @@ chatSocket.onmessage = function(e) {
         // If author and date is the same as the previous message, just combine it (no profile pic and user info)
         if(last_message_author == data.username && last_message_date == data.date_sent){
 
-            document.getElementById('chat-log').innerHTML += ('<div id="message-container"><p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
+            if (data.username == '{{user.username}}'){
+                document.getElementById('chat-log').innerHTML += ('<div id="message-container"><p class="message" id="' + data.message_id + '"' + '>' + data.message + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage('+ data.message_id +')">delete</button></p>');
+            }else{
+                document.getElementById('chat-log').innerHTML += ('<div id="message-container"><p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
+            }
 
             if(typeof data.image_url !== 'undefined'){
                 document.getElementById('chat-log').innerHTML += ('<a target="_blank" href="' + data.image_url + '"><img class="image_message" src="' + data.image_url + '"></a><br></div>');
@@ -380,7 +468,11 @@ chatSocket.onmessage = function(e) {
             document.getElementById('chat-log').innerHTML += ("<img class='rounded-circle' width='40px' height='40px' src='" + data.user_image +"' style='margin-right:20px; margin-bottom: 10px; float:left;'>");
             document.getElementById('chat-log').innerHTML += ('<small id="username">' + data.username + '</small><small id="date_sent"> @' + data.date_sent + '</small><br>')
             
-            document.getElementById('chat-log').innerHTML += ('<div id="message-container"><p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
+            if (data.username == '{{user.username}}'){
+                document.getElementById('chat-log').innerHTML += ('<div id="message-container"><p class="message" id="' + data.message_id + '"' + '>' + data.message + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage('+ data.message_id +')">delete</button></p>');
+            }else{
+                document.getElementById('chat-log').innerHTML += ('<div id="message-container"><p class="message" id="' + data.message_id + '"' + '>' + data.message + '</p>');
+            }
 
             // If there is an image, show it
             if(typeof data.image_url !== 'undefined'){
@@ -531,8 +623,14 @@ if (pos == 0) {
                                 $('#chat-log').prepend($('<br><a target="_blank" href="' + data[i]['image_url'] + '"><img class="image_message" src="' + data[i]['image_url'] + '"></a><br>').fadeIn('slow'));
                               }
 
-                              // Message content
-                              $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + '>' + data[i]['message'] + '</p>').fadeIn('slow'));
+                              if (data[i]['user'] == "{{user.username}}"){
+                                $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + '>' + data[i]['message'] + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage(' + data[i]['message_id']  + ')">delete</button></p>').fadeIn('slow'));
+                              }else{
+                                $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + '>' + data[i]['message'] + '</p>').fadeIn('slow'));
+                              }
+                              
+
+
                           }
 
                       }else{
@@ -543,8 +641,11 @@ if (pos == 0) {
                             $('#chat-log').prepend($('<br><a target="_blank" href="' + data[i]['image_url'] + '"><img class="image_message" src="' + data[i]['image_url'] + '"></a><br>').fadeIn('slow'));
                           }
 
-                          // Message content
-                          $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + '>' + data[i]['message'] + '</p>').fadeIn('slow'));
+                          if (data[i]['user'] == "{{user.username}}"){
+                            $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + '>' + data[i]['message'] + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage(' + data[i]['message_id'] + ')">delete</button></p>').fadeIn('slow'));
+                          }else{
+                            $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + '>' + data[i]['message'] + '</p>').fadeIn('slow'));
+                          }
 
                           // User/Message info
                           $('#chat-log').prepend($('<small id="username">' + data[i]['user'] + '</small><small id="date_sent">@' + data[i]['date_sent'] + '</small><br>').fadeIn('slow'));

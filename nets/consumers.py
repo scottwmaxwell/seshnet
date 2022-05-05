@@ -36,10 +36,24 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
 
         data = json.loads(text_data)
-        user_id = data['user_id']
+        
+        if data['command'] == 'delete':
 
-        if data['command'] == 'typing':
+            message_id = data['message_id']
 
+            # Send message to remove message to net group
+            await self.channel_layer.group_send(
+                self.net_group_name,
+                {
+                    'type': 'delete',
+                    'message_id': message_id
+                }
+            )
+
+        elif data['command'] == 'typing':
+            
+            user_id = data['user_id']
+            
             # Send message to net group
             await self.channel_layer.group_send(
                 self.net_group_name,
@@ -51,6 +65,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
 
         elif data['command'] == 'image':
+
+            user_id = data['user_id']
             message = data['message']
             image_url = data['image_url']
             date_sent = data['date_sent']
@@ -77,8 +93,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         else:
 
+            user_id = data['user_id']
             net_id = data['net_id']
-
             message = data['message']
 
             # Replace <div> and <br> in message with \n
@@ -115,6 +131,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'typing': 'True',
             'user_id': user_id
+
+        }))
+
+    # Receive message to delete from net group
+    async def delete(self, event):
+
+        message_id = event['message_id']
+
+        await self.send(text_data=json.dumps({
+            'delete': 'True',
+            'message_id': message_id
 
         }))
 

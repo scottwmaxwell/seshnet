@@ -104,6 +104,25 @@ def get_messages(request, net_id):
 	return JsonResponse({"status":"fail"})
 
 
+def delete_message(request, net_id):
+
+	print('hello')
+
+	messageID = request.GET.get('messageID', None)
+
+	message_to_delete = Message.objects.get(id=messageID)
+
+	# Extra check to ensure the person deleting the message is the author
+	if request.user == message_to_delete.author:
+
+		# Delete the message
+		message_to_delete.delete()
+
+		return JsonResponse({"status": "success"})
+	else:
+		return JsonResponse({"status": "fail"})
+
+
 def save_image_form(request, net_id):
 	if request.method == 'POST':
 		form = UploadImageMessage(request.POST, request.FILES)

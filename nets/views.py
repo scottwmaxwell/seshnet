@@ -3,7 +3,7 @@ from django.contrib.auth import views as auth_views
 from .models import Net, Message
 from users import views
 from django.contrib.auth.decorators import login_required
-from .forms import UploadImageMessage
+from .forms import UploadImageMessage, CreateNet
 from django.http import JsonResponse
 import datetime
 
@@ -23,8 +23,21 @@ def index(request):
 @login_required
 def net(request, net_id):
 
+	if request.method == 'POST':
+
+		print("HERE!")
+
+		form = CreateNet(request.POST)
+		if form.is_valid():
+
+			# Check is current user is admin
+			if request.user.profile.role == "Admin":
+				form.save()
+
+
 	form = UploadImageMessage
 	nets = Net.objects.all() # This is for the navbar
+	createnet_form = CreateNet
 
 	# Get last 50 messages
 	messages = Message.objects.filter(net=Net.objects.get(id=net_id))[::-1][:50][::-1]
@@ -34,7 +47,8 @@ def net(request, net_id):
 		'net_name': Net.objects.get(id=net_id).title,
 		'messages': messages,
 		'nets': nets,
-		'form': form
+		'form': form,
+		'createnet_form': createnet_form
 	}
 	return render(request, 'nets/net.html', context)
 

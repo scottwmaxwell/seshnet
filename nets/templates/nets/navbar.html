@@ -72,6 +72,8 @@ body {
     position: absolute;
     bottom: 200px;
     padding-left: 20px;
+    background-color:#ce650a; 
+    color:white;
 }
 
 .dmbutton{
@@ -88,6 +90,11 @@ body {
     position: absolute;
     bottom: 250px;
     padding-left: 20px;
+}
+
+.createnet{
+  position: absolute;
+  margin-top: 20px;
 }
 
 .netbutton:hover{
@@ -127,6 +134,11 @@ body {
       {% for net in nets %}
         <a href="{% url 'net' net.id %}" id="net_link"># {{net.title}}</a>
       {% endfor %}
+      {% if user.profile.role == 'Admin' %}
+        <button type="button" class="createnet btn btn-dark" data-toggle="modal" data-target="#exampleModalCenter">
+          Create New Net
+        </button>
+      {% endif %}
 
   {% elif 'net/index' in request.path %}
     <h4>Nets</h4>
@@ -151,7 +163,7 @@ body {
   <!-- If user is admin, show admin settings button -->
   {% if user.is_authenticated %}
     {% if user.profile.role == 'Admin' %}
-      <button class = 'btn adminbutton' style='background-color:#ce650a; color:white;'>Admin Settings</button>
+      <button class = 'btn adminbutton'>Admin Settings</button>
     {% endif %}
   {% endif %}
 

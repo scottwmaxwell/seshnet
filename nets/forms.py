@@ -1,6 +1,6 @@
 from django.forms import ModelForm, FileInput, TextInput
 import django.forms as forms
-from .models import Message
+from .models import Message, Net
 
 class UploadImageMessage(ModelForm):
 	
@@ -14,3 +14,13 @@ class UploadImageMessage(ModelForm):
 			'content': TextInput(),
         	'image': FileInput()
         }
+
+class CreateNet(ModelForm):
+
+	class Meta:
+		model = Net
+		fields = ['title']
+
+		widgets = {
+			'title': TextInput()
+		}

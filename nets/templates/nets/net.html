@@ -4,9 +4,7 @@
 {% block content %}
 
 <head>
-
     <title>{{net_name}}</title>
-
 <style>
 
 /* width */
@@ -93,14 +91,13 @@ div.input-holder{
 }
 
 button.chat-message-submit{
-    height: 25px;
-    width: 25px;
-    float:right;
-    border-radius: 30px;
+    border-radius: 7px;
     text-align: center;
     border: 0;
     outline: none;
-    background-color: #1c2a70;
+    background-color: #ce650a;
+    color: white;
+
 }
 
 p.message{
@@ -131,10 +128,6 @@ button.addimage{
 
 button.delete-message{
 
-    /* Positioning  */
-    
-    /*float:right;   */
-
     /* Design */
     border: 0;
     outline: none;
@@ -155,6 +148,11 @@ button.delete-message:hover{
     background-color:#111;
     color: red;
 
+}
+
+.createnetbtn{
+    background-color:#ce650a; 
+    border: none;
 }
 
 #message-container{
@@ -178,6 +176,35 @@ button.delete-message:hover{
 <body style="background-color:#17181c;">
 
     <div class='row m-0'>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content bg-dark text-white">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Create a new Net</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ createnet_form|crispy }}
+                        <input class="createnetbtn btn btn-primary"  type="submit" value="submit">
+                    </form>
+
+              </div>
+              <div class="modal-footer">
+                <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+                <!-- <button type="button" class="btn btn-primary">Create</button> -->
+              </div>
+            </div>
+          </div>
+        </div>
+
 
         <!-- Buffer to center content -->
         <div class='col-sm-2 main_wrap' style="overflow: hidden;"></div>
@@ -205,7 +232,8 @@ button.delete-message:hover{
                 <small id="who-is-typing" style="float:left; margin-top:10px;"></small>
 
                 <div class="input-holder">
-                    <!-- This form is for images uploads -->
+                    
+                    <!-- This form is for images uploads and is hidden -->
                     <form id="image_form" enctype="multipart/form-data">
                         {% csrf_token %}
                         <label for="id_content" hidden>Content:</label>
@@ -214,10 +242,18 @@ button.delete-message:hover{
                         <input class="btn btn-primary" id="submit_form"  type="submit" value="submit" hidden>
                     </form>
 
+                    <!-- Add image button -->
                     <button class="addimage"><i class="icon-plus" onclick="chooseFile()"></i></button>
+                    
+                    <!-- Attachment icon -->
                     <i class="attachment icon-picture" id="attachment-icon" hidden></i>
+                    
+                    <!-- User input -->
                     <div class="chat-message-input" id="chat-message-input" contenteditable="True" placeholder="Send a message..."></div>
-                    <button class="chat-message-submit" id="chat-message-submit" type="button" hidden><i class="icon-chevron-right"></i></button>
+                    
+                    <!-- Send button -->
+                    <button class="chat-message-submit" id="chat-message-submit" type="button" hidden>Send</button>
+                
                 </div>
             </div>
 
@@ -241,9 +277,6 @@ var last_message_date =  "";
 
     if (last_message_author == "{{message.author}}" && last_message_date == "{{message.date_sent}}"){
         
-
-
-
         {% if message.author == user %}
             document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}" data_username="{{message.author}}" data_date="{{message.date_sent}}">{{message.content|urlize|linebreaksbr}}<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage({{message.id}})">delete</button></p>';
         {% else %}
@@ -710,24 +743,19 @@ if (pos == 0) {
                 // You have to load in each element backwards from how you normally would because of prepend
                     for (let i = 0; i < Object.keys(data).length; i++) {
 
-                      // If there are more messages left than the current index
-                      if (i + 1 < Object.keys(data).length){
+                      // If there are more messages after this one and If the message after this one has the same user and date
+                      if(i + 1 < Object.keys(data).length && data[i]['user'] == data[i+1]['user'] && data[i]['date_sent'] == data[i+1]['date_sent']){
 
-                          // If the message after this one has the same user and date
-                          if(data[i]['user'] == data[i+1]['user'] && data[i]['date_sent'] == data[i+1]['date_sent']){
+                          //image
+                          if (data[i]['image_url']){
+                            $('#chat-log').prepend($('<br><a target="_blank" href="' + data[i]['image_url'] + '"><img class="image_message" id="image-'+ data[i]['message_id'] +'" src="' + data[i]['image_url'] + '"></a><br>').fadeIn('slow'));
+                          }
 
-                              //image
-                              if (data[i]['image_url']){
-                                $('#chat-log').prepend($('<br><a target="_blank" href="' + data[i]['image_url'] + '"><img class="image_message" id="image-'+ data[i]['message_id'] +'" src="' + data[i]['image_url'] + '"></a><br>').fadeIn('slow'));
-                              }
-
-                              // if message is currently logged in user show delete button
-                              if (data[i]['user'] == "{{user.username}}"){
-                                $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + ' data_username="' + data[i]['user'] + '" data_date="' + data[i]['date_sent'] + '">' + data[i]['message'] + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage(' + data[i]['message_id']  + ')">delete</button></p>').fadeIn('slow'));
-                              }else{
-                                $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + ' data_username="' + data[i]['user'] + '" data_date="' + data[i]['date_sent'] + '">' + data[i]['message'] + '</p>').fadeIn('slow'));
-                              }
-                              
+                          // if message is currently logged in user show delete button
+                          if (data[i]['user'] == "{{user.username}}"){
+                            $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + ' data_username="' + data[i]['user'] + '" data_date="' + data[i]['date_sent'] + '">' + data[i]['message'] + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage(' + data[i]['message_id']  + ')">delete</button></p>').fadeIn('slow'));
+                          }else{
+                            $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + ' data_username="' + data[i]['user'] + '" data_date="' + data[i]['date_sent'] + '">' + data[i]['message'] + '</p>').fadeIn('slow'));
                           }
 
                       }else{

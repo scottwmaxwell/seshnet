@@ -1,5 +1,4 @@
 from django.db import models
-
 from django.utils import timezone
 from PIL import Image
 from django.contrib.auth.models import User
@@ -14,7 +13,6 @@ class Message(models.Model):
 	date_sent = models.DateTimeField(default=timezone.now, blank=True)
 	content = models.TextField(null=True)
 	image = models.ImageField(blank=True, upload_to='message_images')
-
 
 	def save(self, *args, **kwargs):
 		super(Message, self).save(*args, **kwargs)

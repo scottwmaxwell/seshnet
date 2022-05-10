@@ -207,7 +207,7 @@ button.delete-message:hover{
         <div class='centered-div col-sm-8' style="overflow: hidden; color:white; background-color:#17181c;">
 
 
-            <div id='newmsg' class="alert alert-dark alert-dismissible fade show" role="alert" style="position:fixed; opacity:100%;">
+            <div id='newmsg' class="alert alert-dark alert-dismissible fade show" role="alert" style="position:absolute; opacity:100%;">
               <strong>New Messages</strong>
               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -428,7 +428,7 @@ chatSocket.onmessage = function(e) {
     // audio.play();
 
     //Check if scroll bar is near bottom before new message
-    at_bottom = objDiv.scrollTop.toFixed() >= (objDiv.scrollHeight.toFixed() - 3000);
+    at_bottom = objDiv.scrollTop.toFixed() >= (objDiv.scrollHeight.toFixed() - 1500);
 
     const data = JSON.parse(e.data);
 

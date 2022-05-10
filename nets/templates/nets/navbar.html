@@ -103,6 +103,19 @@ body {
   color: white;
 }
 
+.logout {
+    position: absolute;
+    bottom: 100px;
+    padding-left: 20px;
+    background-color:#601d14; 
+    color:white;
+}
+
+.logout:hover {
+  background-color: #280b08 !important;
+  color: white;
+}
+
 .profilebutton{
     position: absolute;
     bottom: 300px;
@@ -221,7 +234,7 @@ body {
           <a href="{% url 'net' net.id %}" id="net_link"># {{net.title}}</a>
         {% endfor %}
       </div>
-      {% if user.profile.role == 'Admin' %}
+      {% if user.profile.role == 'Admin' or user.profile.role == 'Moderator' %}
         <button type="button" class="createnet btn btn-dark" data-toggle="modal" data-target="#exampleModalCenter">
           + Create a Net
         </button>
@@ -251,6 +264,8 @@ body {
     {% endif %}
   {% endif %}
 
+  <button class = 'btn logout' onclick="window.location.href='{% url 'logout' %}';">Log out</button>
+
 </div>
 
 <!-- Right Nav for showing users -->
@@ -259,8 +274,23 @@ body {
   <!-- Parse users -->
   <div class="users-list">
   {% for user in users %}
-    <img class='rounded-circle' width='30px' height='30px' style="float:left; margin-left:10px; margin-right:10px;" src="{{ user.profile.image.url }}">
-    <p style="color:white;">{{ user.username }}</p>
+    {% if user.profile.online and user.profile.online_indicator %}
+      <img class='rounded-circle' width='30px' height='30px' style="border-style: solid; border-color: green; float:left; margin-left:10px; margin-right:10px; border-width: 3px;" src="{{ user.profile.image.url }}">
+    {% else %}
+      <img class='rounded-circle border border-dark' width='30px' height='30px' style="float:left; margin-left:10px; margin-right:10px; " src="{{ user.profile.image.url }}">
+    {% endif %}
+
+    <p style="color:white;">{{ user.username }}
+
+      {% if user.profile.online and user.profile.online_indicator %}
+        <small>- Online</small>
+      {% else %}
+        <small>- Offline</small>
+      {% endif %}
+
+    </p>
+
+
   {% endfor %}
   </div>
 

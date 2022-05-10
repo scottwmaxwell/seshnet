@@ -22,12 +22,12 @@ class ProfileUpdate(forms.ModelForm):
 
 		image = forms.ImageField(required=False)
 		typing_indicator = forms.ChoiceField(choices=(True, False))
+		online_indicator = forms.ChoiceField(choices=(True, False))
 
 		model = Profile
-		fields = ['image', 'typing_indicator']
+		fields = ['image', 'typing_indicator', 'online_indicator']
 
 		widgets = {
-			'image':forms.FileInput(),
-			# 'typing_indicator': forms.ChoiceField()
+			'image':forms.FileInput()
 		}
 

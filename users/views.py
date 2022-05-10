@@ -32,7 +32,8 @@ def profile(request):
 	if request.method == 'POST':
 		form = ProfileUpdate(request.POST, request.FILES, instance=request.user.profile)
 		if form.is_valid():
-			# print('here')
+			print(form.cleaned_data.get('typing_indicator'))
+			form.typing_indicator = form.cleaned_data.get('typing_indicator')
 			form.save()
 
 	profile_update = ProfileUpdate

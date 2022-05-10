@@ -491,10 +491,6 @@ chatSocket.onmessage = function(e) {
             
         }
 
-
-
-
-
         // IF the message to be deleted has a profile pic
         if(document.getElementById("pfp-" + data.message_id) != null){
 
@@ -527,13 +523,9 @@ chatSocket.onmessage = function(e) {
             }
         }
 
-
-        // console.log('here')
-
         //Remove message text
         document.getElementById(data.message_id).remove()
 
-        
         // remove image
         if(document.getElementById("image-" + data.message_id) != null){
             // document.getElementById("image-" + data.message_id).style.display='none';
@@ -675,12 +667,12 @@ document.querySelector('#chat-message-input').onkeyup = function(e) {
         document.getElementById('chat-message-input').innerHTML='';
 
     }else{
-
-        chatSocket.send(JSON.stringify({
-            'command': 'typing',
-            'user_id': '{{ user.username }}'
-        }));
-
+        {% if user.profile.typing_indicator %}
+            chatSocket.send(JSON.stringify({
+                'command': 'typing',
+                'user_id': '{{ user.username }}'
+            }));
+        {% endif %}
     }
 };
 

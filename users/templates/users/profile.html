@@ -15,6 +15,10 @@
 	<!-- JQUERY -->
 	<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
 
+	<!-- Toggle button -->
+	<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+	<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
 </head>
 
 <header>
@@ -68,6 +72,12 @@
 	background-color: #111;
 }
 
+.typing_indicator{
+/*	color: white;
+	background-color: white;*/
+}
+
+/*.toggle.ios, .toggle-on.ios, .toggle-off.ios { : white; }*/
 
 </style>
 <!-- Top Nav -->
@@ -110,6 +120,13 @@
         </form>
 
         <p id="attch-chosen" hidden>A New profile picture has been selected.<br> Click "Update" to save.</p>
+
+        {% if user.profile.typing_indicator %}
+        	<p class="typing_indicator">Show Typing Indicator <input checked type="checkbox" id ="typing_indicator" data-toggle="toggle" data-onstyle="warning" data-offstyle="danger"></p>
+        {% else %}
+        	<p class="typing_indicator">Show Typing Indicator <input type="checkbox" id ="typing_indicator" data-toggle="toggle" data-onstyle="warning" data-offstyle="danger"></p>
+        {% endif %}
+
         <button class='btn profile_submit' onclick="submitForm()">Update</button>
 
 	</div>
@@ -120,6 +137,8 @@
 </div>
 
 <script>
+
+// console.log('{{ user.profile.typing_indicator }}')
 
 function chooseFile(){
 	document.getElementById('id_image').click()
@@ -132,6 +151,7 @@ $('#id_image').on('change', function(){
 })
 
 function submitForm(){
+	document.getElementById('id_typing_indicator').checked = document.getElementById('typing_indicator').checked
 	document.getElementById('submit_form').click()
 };
 

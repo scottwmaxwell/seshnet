@@ -21,10 +21,12 @@
 
 .main{
 	border-radius: 30px;
+	background-color: #ce650a; 
+	color: white;
 }
 
 .main:hover{
-	background-color:background-color: #444 !important;
+	background-color:background-color:#444 !important;
 }
 
 </style>
@@ -35,7 +37,7 @@
 		{% if user.is_authenticated %}
 			<button class='btn main' style='background-color: #ce650a; color: white;' onclick="location.href='{% url 'net_index' %}'">Open Seshnet</button>
 		{% else %}
-			<button class='btn main' style='background-color: #ce650a; color: white;' onclick="location.href='{% url 'login' %}'">Login</button>
+			<button class='btn main' onclick="location.href='{% url 'login' %}'">Login</button>
 		{% endif %}
 	</div>
 </nav>

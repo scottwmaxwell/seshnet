@@ -19,12 +19,15 @@ class UserSignUpForm(UserCreationForm):
 class ProfileUpdate(forms.ModelForm):
 
 	class Meta:
+
 		image = forms.ImageField(required=False)
+		typing_indicator = forms.ChoiceField(choices=(True, False))
 
 		model = Profile
-		fields = ['image']
+		fields = ['image', 'typing_indicator']
 
 		widgets = {
-			'image':forms.FileInput()
+			'image':forms.FileInput(),
+			# 'typing_indicator': forms.ChoiceField()
 		}
 

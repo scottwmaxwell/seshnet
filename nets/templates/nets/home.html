@@ -46,6 +46,14 @@
 
 <div class="container">
 	<h1 style="color:white;">Welcome to session_name</h1>
+
+		{% if user.is_authenticated %}
+			<button class='btn main' style='background-color: #ce650a; color: white;' onclick="location.href='{% url 'net_index' %}'">Open Seshnet</button>
+		{% else %}
+			<button class='btn main' onclick="location.href='{% url 'login' %}'">Login</button>
+			<button class='btn main' style='background-color: #444; color: white;' onclick="location.href='{% url 'signup' %}'">Sign Up</button>
+		{% endif %}
+
 </div>
 
 </body>

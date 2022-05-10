@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import views as auth_views
 from .models import Net, Message
 from users import views
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .forms import UploadImageMessage, CreateNet
 from django.http import JsonResponse
@@ -12,7 +13,6 @@ def home(request):
 
 @login_required
 def index(request):
-
 
 	if request.method == 'POST':
 
@@ -26,8 +26,11 @@ def index(request):
 	createnet_form = CreateNet
 
 	nets = Net.objects.all()
+	users = User.objects.all()
+
 	context = {
 		'nets': nets,
+		'users': users,
 		'createnet_form': createnet_form
 
 	}
@@ -50,6 +53,7 @@ def net(request, net_id):
 	form = UploadImageMessage
 	nets = Net.objects.all() # This is for the navbar
 	createnet_form = CreateNet
+	users = User.objects.all()
 
 	# Get last 50 messages
 	messages = Message.objects.filter(net=Net.objects.get(id=net_id))[::-1][:50][::-1]
@@ -58,6 +62,7 @@ def net(request, net_id):
 		'net_id': net_id,
 		'net_name': Net.objects.get(id=net_id).title,
 		'messages': messages,
+		'users': users,
 		'nets': nets,
 		'form': form,
 		'createnet_form': createnet_form

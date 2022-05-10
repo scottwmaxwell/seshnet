@@ -119,13 +119,14 @@
             <button class='btn profile_submit' type="submit" id="submit_form">Update</button>
         </form>
 
-        <p id="attch-chosen" hidden>A New profile picture has been selected.<br> Click "Update" to save.</p>
-
+        <!-- Typing indicator toggle -->
         {% if user.profile.typing_indicator %}
-        	<p class="typing_indicator">Show Typing Indicator <input checked type="checkbox" id ="typing_indicator" data-toggle="toggle" data-onstyle="warning" data-offstyle="danger"></p>
+        	<p class="typing_indicator">Let others see when you are typing <input checked type="checkbox" id ="typing_indicator" data-toggle="toggle" data-onstyle="warning" data-offstyle="danger"></p>
         {% else %}
-        	<p class="typing_indicator">Show Typing Indicator <input type="checkbox" id ="typing_indicator" data-toggle="toggle" data-onstyle="warning" data-offstyle="danger"></p>
+        	<p class="typing_indicator">Let others see when you are typing <input type="checkbox" id ="typing_indicator" data-toggle="toggle" data-onstyle="warning" data-offstyle="danger"></p>
         {% endif %}
+
+        <p id="attch-chosen" hidden>A New profile picture has been selected.<br> Click "Update" to save.</p>
 
         <button class='btn profile_submit' onclick="submitForm()">Update</button>
 

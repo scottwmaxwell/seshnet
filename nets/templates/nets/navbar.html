@@ -76,6 +76,24 @@ body {
     color:white;
 }
 
+.adminbutton:hover {
+  background-color: #444 !important;
+  color: white;
+}
+
+.profilebutton{
+    position: absolute;
+    bottom: 300px;
+    padding-left: 20px;
+    background-color:#ce650a; 
+    color:white;
+}
+
+.profilebutton:hover{
+  background-color: #444 !important;
+  color: white;
+}
+
 .dmbutton{
     position: absolute;
     bottom: 250px;
@@ -84,6 +102,7 @@ body {
 
 .dmbutton:hover{
   background-color: #444 !important;
+  color: white;
 }
 
 .netbutton{
@@ -101,13 +120,14 @@ body {
     background-color: #444 !important;
 }
 
-.adminbutton:hover {
-  background-color: #444 !important;
-}
-
 #main {
   transition: margin-left .5s;
   padding: 5px;
+}
+
+.nets-section{
+  max-height: 40vh;
+  overflow-y: auto;
 }
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
@@ -131,22 +151,27 @@ body {
   {% elif 'net' in request.path %}
     <h4 style="color:#e0e0e0; margin-left: 20px;">Nets</h4>
     <hr style="color:#e0e0e0;">
-      {% for net in nets %}
-        <a href="{% url 'net' net.id %}" id="net_link"># {{net.title}}</a>
-      {% endfor %}
+
+      <div class="nets-section">
+        {% for net in nets %}
+          <a href="{% url 'net' net.id %}" id="net_link"># {{net.title}}</a>
+        {% endfor %}
+      </div>
       {% if user.profile.role == 'Admin' %}
         <button type="button" class="createnet btn btn-dark" data-toggle="modal" data-target="#exampleModalCenter">
           Create New Net
         </button>
       {% endif %}
 
-  {% elif 'net/index' in request.path %}
+<!--   {% elif 'net/index' in request.path %}
     <h4>Nets</h4>
     <hr style="color:#e0e0e0;">
+      <div class="nets-section">
       {% for net in nets %}
         <a href="{% url 'net' net.id %}" id="net_link"># {{net.title}}</a>
       {% endfor %}
-  {% endif %}
+    </div>
+  {% endif %} -->
   
   <!-- If not on directmessages show directmessage button -->
   {% if 'directmessage' not in request.path %}
@@ -159,11 +184,15 @@ body {
       <button class = 'btn netbutton' style='background-color:#ce650a; color:white;' onclick="location.href='{% url 'net_index' %}'">Nets</button>
   {% endif %}
 
+    <!-- If user is authenticated -->
+  {% if user.is_authenticated %}
+      <button class = 'btn profilebutton' onclick="window.location.href='{% url 'profile' %}';">Profile</button>
+  {% endif %}
 
   <!-- If user is admin, show admin settings button -->
   {% if user.is_authenticated %}
     {% if user.profile.role == 'Admin' %}
-      <button class = 'btn adminbutton'>Admin Settings</button>
+      <button class = 'btn adminbutton' onclick="window.location.href='{% url 'adminsettings' %}';">Admin Settings</button>
     {% endif %}
   {% endif %}
 

@@ -13,9 +13,23 @@ def home(request):
 @login_required
 def index(request):
 
+
+	if request.method == 'POST':
+
+		form = CreateNet(request.POST)
+		if form.is_valid():
+
+			# Check is current user is admin
+			if request.user.profile.role == "Admin":
+				form.save()
+
+	createnet_form = CreateNet
+
 	nets = Net.objects.all()
 	context = {
 		'nets': nets,
+		'createnet_form': createnet_form
+
 	}
 	return render(request, 'nets/index.html', context)
 
@@ -24,8 +38,6 @@ def index(request):
 def net(request, net_id):
 
 	if request.method == 'POST':
-
-		print("HERE!")
 
 		form = CreateNet(request.POST)
 		if form.is_valid():

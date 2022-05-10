@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import UserSignUpForm
+from .forms import UserSignUpForm, ProfileUpdate
 from django.contrib.auth.decorators import login_required
 
 def signup(request):
@@ -24,3 +24,30 @@ def settings(request):
 
 	# Get user and pass it into template
 	return render(request, 'users/settings.html')
+
+
+@login_required
+def profile(request):
+
+	if request.method == 'POST':
+		form = ProfileUpdate(request.POST, request.FILES, instance=request.user.profile)
+		if form.is_valid():
+			# print('here')
+			form.save()
+
+	profile_update = ProfileUpdate
+
+	context = {
+		'profile_update': profile_update
+	}
+
+	return render(request, 'users/profile.html', context)
+
+
+def adminsettings(request):
+
+	if request.user.profile.role == "Admin":
+		return render(request, 'users/adminsettings.html')
+
+	else:
+		return render(request, 'users/error.html')

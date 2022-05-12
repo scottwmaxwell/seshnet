@@ -1,5 +1,3 @@
-
-
 {% load crispy_forms_filters %}
 
 <!DOCTYPE html>
@@ -20,27 +18,37 @@
 
 	</head>
 
+
+<style>
+
+.textinput{
+	max-width: 500px;
+}
+
+</style>
+
 	<body style="background-color:#111; color:white;">
+		<center>
+			<div class="container">
+				
+					<form method="POST">
+						{% csrf_token%}
+						<fieldset class="form-group">
+							<legend class=''>Log into Seshnet</legend>
+								{{ form|crispy }}
+						</fieldset>
+						<div>
+							<button class = 'btn' style='background-color: #ce650a; color: white; margin-top:20px; margin-bottom:10px;' type="Submit">Log in</button>
+						</div>
 
-		<div class="container">
-			
-				<form method="POST">
-					{% csrf_token%}
-					<fieldset class="form-group">
-						<legend class='border-bottom mb-4'>Log into Seshnet</legend>
-							{{ form|crispy }}
-					</fieldset>
-					<div>
-						<button class = 'btn' style='background-color: #ce650a; color: white;' type="Submit">Log in</button>
-					</div>
-
-					<div>
-						<small>
-						Do you need an account? <a href="{% url 'signup' %}">Sign Up</a>
-						</small>
-					</div>
-				</form>
-		</div>
+						<div>
+							<small>
+							Do you need an account? <a href="{% url 'signup' %}">Sign Up</a>
+							</small>
+						</div>
+					</form>
+			</div>
+		</center>
 	</body>
 
 </html>

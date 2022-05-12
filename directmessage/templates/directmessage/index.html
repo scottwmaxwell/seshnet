@@ -1,2 +1,43 @@
 {% extends 'nets/base.html' %}
-This is the message page
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<head>
+    <title>Seshnet</title>
+
+</head>
+
+<style>
+      div.main {
+        background-color: #17181c;
+        max-height: 100vh;
+        height: 600px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        text-align: left;
+        border-radius: 10px;
+      }
+</style>
+
+<body style="background-color:#111;">
+
+    <div class='row m-0'>
+
+        <!-- Buffer to center content -->
+        <div class='col-sm-2 main_wrap' style="overflow: hidden;"></div>
+
+
+        <!-- Centered Content -->
+        <div class='col-sm-8' style="overflow: hidden; color:white; background-color:#111;">
+
+        </div>
+
+
+        <!-- Buffer to center content -->
+        <div class='col-sm-2'></div>
+
+    </div>
+</body>
+
+{% endblock content %}

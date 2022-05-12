@@ -69,7 +69,7 @@ def net(request, net_id):
 	}
 	return render(request, 'nets/net.html', context)
 
-
+@login_required
 def get_messages(request, net_id):
 	
 	if request.method == 'GET':
@@ -134,7 +134,7 @@ def get_messages(request, net_id):
 		return JsonResponse(message_data)
 	return JsonResponse({"status":"fail"})
 
-
+@login_required
 def delete_message(request, net_id):
 
 	print('hello')
@@ -153,7 +153,7 @@ def delete_message(request, net_id):
 	else:
 		return JsonResponse({"status": "fail"})
 
-
+@login_required
 def save_image_form(request, net_id):
 	if request.method == 'POST':
 		form = UploadImageMessage(request.POST, request.FILES)

@@ -1,0 +1,765 @@
+{% extends 'nets/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<head>
+    <title>{{chat_name}}</title>
+<style>
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #1d1e23; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #111; 
+  border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
+
+form.image_form{
+    opacity: 0%;
+}
+
+div.chat-log {
+    min-height: 72vh;
+    max-height: 75vh;
+    max-width: 99%;
+    height: 30%;
+    overflow-wrap: break-word;
+    overflow-y: auto;
+    text-align: left;
+    font-size: 14px;
+    position: relative;
+    text-align: left;
+}
+
+img.image_message{
+    margin-left: 60px; !important
+    /*max-height: 300px;*/
+    /*height: 70%;*/
+    width: auto;
+    max-width: 50%;
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+
+div.middle-div{
+    background-color: #1d1e23;
+    border-radius:10px;
+    margin-bottom: 20px;
+    overflow: visible;
+}
+
+div.centered-div{
+   max-height: 90vh;
+}
+
+div.chat-message-input{
+    background-color:#111; 
+    border-color:#626263; 
+    color:white;
+    max-width: 100%;
+    border: 0;
+    outline: none;
+    border-radius: 8px;
+    margin-left: 70px;
+    margin-right: 50px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    word-wrap: break-word;
+}
+
+div.input-holder{
+    margin-bottom: 3px;
+    background-color:#111;  
+    border-radius: 12px;
+    margin-top: 35px;
+}
+
+button.chat-message-submit{
+    border-radius: 7px;
+    text-align: center;
+    border: 0;
+    outline: none;
+    background-color: #ce650a;
+    color: white;
+
+}
+
+p.message{
+    margin-left: 60px;
+    margin-bottom: 5px;
+
+}
+
+
+.chat-message-input:empty:before {
+    content: attr(placeholder);
+    opacity: 30%;
+}
+
+button.addimage{
+    height: 25px;
+    width: 25px;
+    float:left;
+    border-radius: 30px;
+    text-align: center;
+    border: 0;
+    outline: none;
+    margin-top: 7px;
+    margin-left: 10px;
+    background-color:#494949;
+    color: white;
+}
+
+button.delete-message{
+
+    /* Design */
+    border: 0;
+    outline: none;
+    border-radius: 30px;
+    text-align: center;
+    
+    /* Colors  */
+    background-color:#494949;
+    color: white;
+    opacity: 1%;
+
+
+}
+
+button.delete-message:hover{
+
+    opacity: 40%;
+    background-color:#111;
+    color: red;
+
+}
+
+#message-container{
+    display:inline;
+}
+
+
+.attachment{
+    float:left;
+    border: 0;
+    outline: none;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+</style>
+
+</head>
+
+
+<body style="background-color:#17181c;">
+
+    <div class='row m-0'>
+
+
+        <!-- Buffer to center content -->
+        <div class='col-sm-2 main_wrap' style="overflow: hidden;"></div>
+
+
+        <!-- Centered Content -->
+        <div class='centered-div col-sm-8' style="overflow: hidden; color:white; background-color:#17181c;">
+
+
+            <div id='newmsg' class="alert alert-dark alert-dismissible fade show" role="alert" style="position:absolute; opacity:100%;">
+              <strong>New Messages</strong>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+            <!-- Hide message intially when loading page... -->
+            <script>$('#newmsg').hide()</script>
+
+            <div class="middle-div p-3 mb-2 text-light">
+
+                <div class="chat-log" id="chat-log"></div>
+
+                <!-- Displays who is typing -->
+                <small id="who-is-typing" style="float:left; margin-top:10px;"></small>
+
+                <div class="input-holder">
+                    
+                    <!-- This form is for images uploads and is hidden -->
+                    <form id="image_form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label for="id_content" hidden>Content:</label>
+                        <input type="text" name="content" required="" id="id_content" hidden>
+                        <input type="file" name="image" accept="image/*" id="id_image" hidden>
+                        <input class="btn btn-primary" id="submit_form"  type="submit" value="submit" hidden>
+                    </form>
+
+                    <!-- Add image button -->
+                    <button class="addimage"><i class="icon-plus" onclick="chooseFile()"></i></button>
+                    
+                    <!-- Attachment icon -->
+                    <i class="attachment icon-picture" id="attachment-icon" hidden></i>
+                    
+                    <!-- User input -->
+                    <div class="chat-message-input" id="chat-message-input" contenteditable="True" placeholder="Send a message..."></div>
+                    
+                    <!-- Send button -->
+                    <button class="chat-message-submit" id="chat-message-submit" type="button" hidden>Send</button>
+                
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Buffer to center content -->
+        <div class='col-sm-2'></div>
+
+    </div>
+</body>
+
+
+<!-- <button class="delete-message" id="{{message.id}}-delete">delete</button> -->
+
+<!-- SCRIPT FOR DISPLAYING MESSAGES -->
+<script>
+var last_message_author = "";
+var last_message_date =  "";
+
+{% for message in messages %}
+
+    if (last_message_author == "{{message.author}}" && last_message_date == "{{message.date_sent}}"){
+        
+        {% if message.author == user %}
+            document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}" data_username="{{message.author}}" data_date="{{message.date_sent}}">{{message.content|urlize|linebreaksbr}}<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage({{message.id}})">delete</button></p>';
+        {% else %}
+            document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}" data_username="{{message.author}}" data_date="{{message.date_sent}}">{{message.content|urlize|linebreaksbr}}</p>';
+        {% endif %}
+        
+
+        {% if message.image %}
+            document.getElementById('chat-log').innerHTML += ('<a href="{{message.image.url}}" target="_blank"><img class="image_message" id="image-{{message.id}}" src="' + '{{message.image.url}}' + '"></a><br></div>');
+        {% endif %}
+
+    } else {
+        document.getElementById('chat-log').innerHTML += "<hr style='opacity:0%;' id='hr-{{message.id}}'>"
+        document.getElementById('chat-log').innerHTML += "<img class='rounded-circle' width='40px' height='40px' src='{{ message.author.profile.image.url }}' style='margin-right:20px; margin-bottom: 10px; float:left;' id='pfp-{{message.id}}'>"
+        document.getElementById('chat-log').innerHTML += '<small id="username-{{message.id}}">{{ message.author }}</small><small id="date-{{message.id}}"> @{{ message.date_sent }}</small><br>'
+        
+
+        {% if message.author == user %}
+            document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}" data_username="{{message.author}}" data_date="{{message.date_sent}}">{{message.content|urlize|linebreaksbr}}<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage({{message.id}})">delete</button></p>';
+        {% else %}
+            document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}" data_username="{{message.author}}" data_date="{{message.date_sent}}">{{message.content|urlize|linebreaksbr}}</p>';
+        {% endif %}
+
+
+        {% if message.image %}
+            document.getElementById('chat-log').innerHTML += ('<br><a href="{{message.image.url}}" target="_blank"><img class="image_message" id="image-{{message.id}}" src="' + '{{message.image.url}}' + '"></a><br></div>');
+        {% endif %}
+        
+    };
+
+    last_message_author = "{{ message.author }}";
+    last_message_date = "{{ message.date_sent }}";
+
+{% endfor %}
+</script>
+
+
+{{ chat_id|json_script:"chat-id" }}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js" integrity="sha512-SxQulwFs2B38bmUJtBSo9tD07MDrtCbY8me3AOZ14tRknCPTeMDLvCQV4ekhs8R0o9QPnW5HQanKfveexVcwLA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<script type="text/javascript">
+
+var objDiv = document.getElementById("chat-log");
+
+//scrolls to bottom of chat log when loading the page
+window.onload=function () {
+    var objDiv = document.getElementById("chat-log");
+    objDiv.scrollTop = objDiv.scrollHeight;
+}
+
+const chatID = JSON.parse(document.getElementById('chat-id').textContent);
+
+const chatSocket = new ReconnectingWebSocket(
+    'ws://'
+    + window.location.host
+    + '/ws/directmessage/'
+    + chatID
+    + '/'
+);
+
+$('#image_form').on('submit', function (e) {
+        e.preventDefault();
+
+        $form = $(this)
+        var formData = new FormData(this);
+
+        $.ajax({
+            type: 'POST',
+            url: 'save_image_message/',
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+
+            success: function (data) {
+
+                if (data["status"] == "valid") {
+                    
+
+                    //Send data to websocket!
+                    chatSocket.send(JSON.stringify({
+                        'command': 'image',
+                        'message': data['message'],
+                        'user_id': data['user'],
+                        'image_url': data['image_url'],
+                        'date_sent': data['date_sent'],
+                        'message_id':data['message_id']
+                    }));
+
+                    resetForm();
+
+
+                }
+                if (data["status"] == "invalid") {
+                    console.log('Failed to upload image')
+                }
+            },
+            error: function () {
+                console.log('Failed to upload image')
+            }
+        })
+
+    })
+
+function deleteMessage(message_id){
+
+    if (window.confirm("Are you sure you want to delete this message?")){
+
+        $.ajax({
+            type: 'GET',
+            url: 'delete_message/',
+            data: {messageID: message_id},
+
+            success: function (data) {
+
+                // tell websocket that the message was deleted...
+                chatSocket.send(JSON.stringify({
+                    'command': 'delete',
+                    'message_id': message_id
+                }));
+
+            },
+            error: function () {
+                console.log("Failed to delete message")
+            }
+        })
+    }
+}
+
+//Called after user selects custom button to select hidden "choose file" button
+function chooseFile(){
+    document.querySelector('#id_image').click();
+}
+
+// Called after user submits form via ajax
+function resetForm(){
+    document.getElementById('image_form').reset()
+    document.getElementById('attachment-icon').setAttribute('hidden', 'True')
+}
+
+// Show attachment is selected after user has chosen it
+$('#id_image').on('change', function(){
+    //TODO 
+    document.getElementById('attachment-icon').removeAttribute("hidden")
+})
+
+//Variable Used for timing out who is typing...
+let timeout;
+
+//data received from websocket
+chatSocket.onmessage = function(e) {
+
+    // var audio = new Audio('notification.mp3');
+    // audio.play();
+
+    //Check if scroll bar is near bottom before new message
+    at_bottom = objDiv.scrollTop.toFixed() >= (objDiv.scrollHeight.toFixed() - 1500);
+
+    const data = JSON.parse(e.data);
+
+
+    
+
+    if (data.delete == "True"){
+
+        var no_next_message = 0;
+
+        // Find next message after the one that is to be deleted
+        for(let i = 1; i < 30; i++){
+            var id = (parseInt(data.message_id) + i);
+            if(document.getElementById(id) != null){
+                var next_message_id = id
+                no_next_message = 0;
+                break
+            }
+
+            if (i == 29){
+                no_next_message = 1;
+            }
+        }
+
+        // remove the profile picture if there is one and the other info
+        if(document.getElementById("pfp-" + next_message_id) != null){
+
+            if(document.getElementById("pfp-" + data.message_id) != null){
+                document.getElementById("pfp-" + data.message_id).remove()
+                document.getElementById("username-" + data.message_id).remove()
+
+                // Remove <br> element after date
+                document.getElementById("date-" + data.message_id).nextElementSibling.remove()
+
+                document.getElementById("date-" + data.message_id).remove()
+            }
+
+
+        // If there aren't any more messages, and a pfp exists, remove the pfp and other info
+        }else if(no_next_message && document.getElementById("pfp-" + data.message_id) != null){
+
+                document.getElementById("pfp-" + data.message_id).remove()
+                document.getElementById("username-" + data.message_id).remove()
+                
+                // Remove <br> element after date
+                document.getElementById("date-" + data.message_id).nextElementSibling.remove()
+
+
+                document.getElementById("date-" + data.message_id).remove()
+
+
+                // Remove hr element
+                if(document.getElementById('hr-' + data.message_id) !=null){
+                    document.getElementById('hr-' + data.message_id).remove()
+                }
+
+                // Reset these so a new pfp can be created for the next message sent in real-time
+                last_message_author = "";
+                last_message_date =  "";
+            
+        }
+
+        // IF the message to be deleted has a profile pic
+        if(document.getElementById("pfp-" + data.message_id) != null){
+
+            // IF the next message does not have a profile pic
+            if (document.getElementById("pfp-" + next_message_id) == null){
+
+                if(document.getElementById(next_message_id) != null){
+
+                    // If the username of the next message and the username of the message to be deleted are equal
+                    if(document.getElementById(next_message_id).getAttribute("data_username") == document.getElementById("username-" + data.message_id).innerHTML){
+
+
+                        // If the date of the next message and the date of the message to be deleted are equal
+                        if(' @' + document.getElementById(next_message_id).getAttribute("data_date") == document.getElementById("date-" + data.message_id).innerHTML){
+
+
+                            // Set the pfp to the id of the next message
+                            document.getElementById("pfp-" + data.message_id).id = ('pfp-' + next_message_id);
+
+                            // Set the username to the id of the next message
+                            document.getElementById("username-" + data.message_id).id = ('username-' + next_message_id);
+
+                            // Set the date to the id of the next message
+                            document.getElementById("date-" + data.message_id).id = ('date-' + next_message_id);
+
+                        }
+
+                    }
+                }
+            }
+        }
+
+        //Remove message text
+        document.getElementById(data.message_id).remove()
+
+        // remove image
+        if(document.getElementById("image-" + data.message_id) != null){
+            // document.getElementById("image-" + data.message_id).style.display='none';
+            document.getElementById("image-" + data.message_id).remove()
+        }
+
+    // If someone is typing, display it
+    }else if (data.typing == "True"){
+
+        // Only display to other users
+        if (data.user_id != "{{ user.username }}"){
+
+            //Add condition if multiple people are typing.
+            if (document.getElementById('who-is-typing').innerHTML != '' && document.getElementById('who-is-typing').innerHTML.indexOf(data.user_id) < 0){
+
+                document.getElementById('who-is-typing').innerHTML += (' and' + data.user_id + ' is typing');
+                clearTimeout(timeout)
+                timeout = window.setTimeout(removeWhoIsTyping, 3000, '')
+
+            }else if(document.getElementById('who-is-typing').innerHTML == ""){
+                document.getElementById('who-is-typing').innerHTML = ( data.user_id + ' is typing')
+                clearTimeout(timeout)
+                timeout = window.setTimeout(removeWhoIsTyping, 3000, data.user_id)
+            }else{
+                clearTimeout(timeout)
+                timeout = window.setTimeout(removeWhoIsTyping, 3000, data.user_id)
+            };
+        }
+
+    }else{
+
+        // Remove typing indicator if it's currently showing the user who sent a message
+        if (document.getElementById('who-is-typing').innerHTML.indexOf(data.username) >= 0){
+            document.getElementById('who-is-typing').innerHTML = "";
+         };
+
+        // If author and date is the same as the previous message, just combine it (no profile pic and user info)
+        if(last_message_author == data.username && last_message_date == data.date_sent){
+
+
+            if (data.username == '{{user.username}}'){
+                document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + ' data_username="' + data.username + '" data_date="' + data.date_sent + '">' + data.message + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage('+ data.message_id +')">delete</button></p>');
+            }else{
+                document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + ' data_username="' + data.username + '" data_date="' + data.date_sent + '">' + data.message + '</p>');
+            }
+
+            if(typeof data.image_url !== 'undefined'){
+                document.getElementById('chat-log').innerHTML += ('<a target="_blank" href="' + data.image_url + '"><img class="image_message" id="image-'+ data.message_id +'"src="' + data.image_url + '"></a><br></div>');
+            }else{
+                document.getElementById('chat-log').innerHTML+='</div>'
+            };
+
+
+        // show username, profile pic, etc.
+        }else{
+            document.getElementById('chat-log').innerHTML += "<hr style='opacity:0%;' id='hr-" + data.message_id +"'>"
+            document.getElementById('chat-log').innerHTML += ("<img class='rounded-circle' width='40px' height='40px' src='" + data.user_image +"' style='margin-right:20px; margin-bottom: 10px; float:left;' id='pfp-" + data.message_id + "'>");
+            document.getElementById('chat-log').innerHTML += ('<small id="username-'+ data.message_id +'">' + data.username + '</small><small id="date-' + data.message_id + '"> @' + data.date_sent + '</small><br>')
+            
+            if (data.username == '{{user.username}}'){
+                document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + ' data_username="' + data.username + '" data_date="' + data.date_sent + '">' + data.message + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage('+ data.message_id +')">delete</button></p>');
+            }else{
+                document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + ' data_username="' + data.username + '" data_date="' + data.date_sent + '">' + data.message + '</p>');
+            }
+
+            // If there is an image, show it
+            if(typeof data.image_url !== 'undefined'){
+                document.getElementById('chat-log').innerHTML += ('<br><a target="_blank" href="' + data.image_url + '"><img class="image_message" id="image-'+ data.message_id +'" src="' + data.image_url + '"></a><br></div>');
+            }else{
+                document.getElementById('chat-log').innerHTML+='</div>';
+            }
+        }
+
+        //Reset variables
+        last_message_author = data.username
+        last_message_date = data.date_sent
+
+        // If a new message came in and it's not the current user, play sound notification
+        if(data.username != '{{ user.username}}'){
+            // audio.play();
+        }
+
+        // If at bottom, scroll down automatically
+        if(at_bottom){
+            
+            objDiv.scrollTop = objDiv.scrollHeight;
+
+        // Otherwise, show a notification that there is a new message
+        }else{
+            //show alert for new messages if you can't see them
+            if(data.username != '{{ user.username}}'){
+                $('#newmsg').show()
+            }
+        }
+    };
+};
+
+chatSocket.onclose = function(e) {
+    console.error('Chat socket closed unexpectedly');
+};
+
+
+document.querySelector('#chat-message-input').focus();
+
+document.querySelector('#chat-message-input').onkeydown = function(e) {
+   // User hits enter key and is not holding shift
+   if (e.keyCode === 13 && event.shiftKey != 1) {
+
+        //This prevents the div from expanding
+        e.preventDefault()
+    }
+};
+
+document.querySelector('#chat-message-input').onkeyup = function(e) {
+    if (e.keyCode === 13 && event.shiftKey != 1) {  // enter without holding shift
+
+        //If image file was selected
+        if($('#id_image').val().length){
+
+            // Set value of input field from text from input field
+            document.getElementById("id_content").value = document.getElementById('chat-message-input').innerHTML;
+
+            // Form will only be valid if text is sent... so if input is blank, then add some text (so that users can send messages without adding text)
+            if(document.getElementById("id_content").value == ''){
+                document.getElementById("id_content").value = 'Image:';
+            }
+
+
+            // Submit form for image message
+            document.querySelector('#submit_form').click()
+
+        }else{
+
+            //Click submit button for regular message
+            document.querySelector('#chat-message-submit').click();
+        }
+
+        // Clear input field
+        document.getElementById('chat-message-input').innerHTML='';
+
+    }else{
+        {% if user.profile.typing_indicator %}
+            chatSocket.send(JSON.stringify({
+                'command': 'typing',
+                'user_id': '{{ user.username }}'
+            }));
+        {% endif %}
+    }
+};
+
+document.querySelector('#chat-message-submit').onclick = function(e) {
+
+    var message = document.getElementById('chat-message-input').innerHTML;
+
+    message = message.replaceAll('&nbsp;', ' ')
+
+    // Check if message is blank before submission, or contains &nbsp
+    if(message.replace(/\s/g, '').length != 0){
+        chatSocket.send(JSON.stringify({
+            'command': '',
+            'message': message,
+            'user_id': '{{ user.id }}',
+            'chat_id': '{{ chat_id }}'
+        }));
+    }
+};
+
+function removeWhoIsTyping(user_id){
+
+    if (user_id === ''){
+        document.getElementById('who-is-typing').innerHTML = ""
+
+    }else{
+
+        string_to_remove = user_id + ' is typing'
+        document.getElementById('who-is-typing').innerHTML = document.getElementById('who-is-typing').innerHTML.replace(string_to_remove, '')
+    }
+};
+
+
+// DETECT when scroll at the top of chat-log
+$('#chat-log').scroll(function() {
+var pos = $('#chat-log').scrollTop();
+if (pos == 0) {
+    
+    // Get id of message at top of chat log
+    var message_id = document.querySelector("#chat-log p").id;
+    
+    //Save off current height of chat-log before adding new messages
+    var height = objDiv.scrollHeight
+
+        $.ajax({
+            type: 'GET',
+            url: 'get_messages/',
+            data: {messageID: message_id},
+
+            success: function (data) {
+                
+                if (data['status'] != "no messages") {
+                // You have to load in each element backwards from how you normally would because of prepend
+                    for (let i = 0; i < Object.keys(data).length; i++) {
+
+                      // If there are more messages after this one and If the message after this one has the same user and date
+                      if(i + 1 < Object.keys(data).length && data[i]['user'] == data[i+1]['user'] && data[i]['date_sent'] == data[i+1]['date_sent']){
+
+                          //image
+                          if (data[i]['image_url']){
+                            $('#chat-log').prepend($('<br><a target="_blank" href="' + data[i]['image_url'] + '"><img class="image_message" id="image-'+ data[i]['message_id'] +'" src="' + data[i]['image_url'] + '"></a><br>').fadeIn('slow'));
+                          }
+
+                          // if message is currently logged in user show delete button
+                          if (data[i]['user'] == "{{user.username}}"){
+                            $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + ' data_username="' + data[i]['user'] + '" data_date="' + data[i]['date_sent'] + '">' + data[i]['message'] + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage(' + data[i]['message_id']  + ')">delete</button></p>').fadeIn('slow'));
+                          }else{
+                            $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + ' data_username="' + data[i]['user'] + '" data_date="' + data[i]['date_sent'] + '">' + data[i]['message'] + '</p>').fadeIn('slow'));
+                          }
+
+                      }else{
+
+
+                          //image
+                          if (data[i]['image_url']){
+                            $('#chat-log').prepend($('<br><a target="_blank" href="' + data[i]['image_url'] + '"><img class="image_message" id="image-'+ data[i]['message_id'] +'" src="' + data[i]['image_url'] + '"></a><br>').fadeIn('slow'));
+                          }
+
+
+                          // if message is currently logged in user show delete button
+                          if (data[i]['user'] == "{{user.username}}"){
+                            $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + ' data_username="' + data[i]['user'] + '" data_date="' + data[i]['date_sent'] + '">' + data[i]['message'] + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage(' + data[i]['message_id'] + ')">delete</button></p>').fadeIn('slow'));
+                          }else{
+                            $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + ' data_username="' + data[i]['user'] + '" data_date="' + data[i]['date_sent'] + '">' + data[i]['message'] + '</p>').fadeIn('slow'));
+                          }
+
+                          // User/Message info
+                          $('#chat-log').prepend($('<small id="username-' + data[i]['message_id'] +'">' + data[i]['user'] + '</small><small id="date-' + data[i]['message_id'] +'">@' + data[i]['date_sent'] + '</small><br>').fadeIn('slow'));
+
+
+                          // User image
+                          $('#chat-log').prepend($("<img class='rounded-circle' width='40px' height='40px' src='" + data[i]['pf_pic_url'] +"' style='margin-right:20px; margin-bottom: 10px; float:left;' id='pfp-" + data[i]['message_id'] + "'>").fadeIn('slow'));
+
+
+                          $('#chat-log').prepend($("<hr style='opacity:0%;' id='hr-" + data[i]['message_id'] + "'>").fadeIn('slow'));
+                        }
+                    }
+                }
+
+                //Put scroll bar somewhere else.
+               height_difference = objDiv.scrollHeight - height
+                
+               if (height_difference > 100){
+                    objDiv.scrollTop = height_difference;
+               }
+            },
+            error: function () {
+                console.log("Failed to get older messages")
+            }
+        })
+}
+});
+
+</script>
+
+{% endblock content %}  

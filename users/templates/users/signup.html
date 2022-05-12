@@ -18,25 +18,39 @@
 
 </head>
 
-<body style="background-color:#111; color:white;">
-	<div class="container">
-	<form method="POST">
-		{% csrf_token %}
-		<fieldset class="">
-			<legend class=''>Sign Up for Seshnet</legend>
-			{{ form|crispy }}
-		</fieldset>
-		<div>
-			<button class = 'btn' style='background-color: #ce650a; color: white;' type="Submit">Sign Up</button>
-		</div>
+<style>
 
-		<div>
-			<small>
-			Already have an account? <a href="{% url 'login' %}">Log in</a>
-			</small>
+.textinput{
+	max-width: 500px;
+}
+
+ul li::marker {
+	color: #111;
+}
+
+</style>
+
+<body style="background-color:#111; color:white;">
+	<center>
+		<div class="container">
+		<form method="POST">
+			{% csrf_token %}
+			<fieldset class="">
+				<legend class=''>Sign Up for Seshnet</legend>
+				{{ form|crispy }}
+			</fieldset>
+			<div>
+				<button class = 'btn' style='background-color: #ce650a; color: white;' type="Submit">Sign Up</button>
+			</div>
+
+			<div>
+				<small>
+				Already have an account? <a href="{% url 'login' %}">Log in</a>
+				</small>
+			</div>
+		</form>
 		</div>
-	</form>
-	</div>
+	</center>
 </body>
 
 </html>

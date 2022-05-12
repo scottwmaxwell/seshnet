@@ -10,6 +10,8 @@
 	<!-- For icons -->
 	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
+	<link rel="icon" href="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png" type="image/icon type">
+
 </head>
 
 <header>
@@ -44,16 +46,37 @@
 
 <body style="background-color:#111;">
 
-<div class="container">
-	<h1 style="color:white;">Welcome to session_name</h1>
 
-		{% if user.is_authenticated %}
-			<button class='btn main' style='background-color: #ce650a; color: white;' onclick="location.href='{% url 'net_index' %}'">Open Seshnet</button>
-		{% else %}
-			<button class='btn main' onclick="location.href='{% url 'login' %}'">Login</button>
-			<button class='btn main' style='background-color: #444; color: white;' onclick="location.href='{% url 'signup' %}'">Sign Up</button>
-		{% endif %}
+    <div class='row m-0'>
 
-</div>
+        <!-- Buffer to center content -->
+        <div class='col-sm-2 main_wrap' style="overflow: hidden;"></div>
+
+
+        <!-- Centered Content -->
+        <div class='col-sm-8' style="overflow: hidden; color:white; background-color:#111;">
+
+            <div class="p-3 mb-2 text-light">
+            	<center>
+				<h1 style="color:white;"><img width="50" height="50" src="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png"> Welcome to Seshnet</h1>
+				
+
+				{% if user.is_authenticated %}
+					<button class='btn main' style='background-color: #ce650a; color: white;' onclick="location.href='{% url 'net_index' %}'">Open Seshnet</button>
+				{% else %}
+					<button class='btn main' onclick="location.href='{% url 'login' %}'">Login</button>
+					<button class='btn main' style='background-color: #444; color: white;' onclick="location.href='{% url 'signup' %}'">Sign Up</button>
+				{% endif %}
+				</center>
+
+
+            </div>    
+
+        </div>
+
+
+        <!-- Buffer to center content -->
+        <div class='col-sm-2'></div>
+    </div>
 
 </body>

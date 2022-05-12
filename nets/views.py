@@ -137,8 +137,6 @@ def get_messages(request, net_id):
 @login_required
 def delete_message(request, net_id):
 
-	print('hello')
-
 	messageID = request.GET.get('messageID', None)
 
 	message_to_delete = Message.objects.get(id=messageID)

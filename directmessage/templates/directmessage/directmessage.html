@@ -515,12 +515,12 @@ chatSocket.onmessage = function(e) {
             //Add condition if multiple people are typing.
             if (document.getElementById('who-is-typing').innerHTML != '' && document.getElementById('who-is-typing').innerHTML.indexOf(data.user_id) < 0){
 
-                document.getElementById('who-is-typing').innerHTML += (' and' + data.user_id + ' is typing');
-                clearTimeout(timeout)
+                document.getElementById('who-is-typing').innerHTML += ('' + data.user_id + ' is typing ');
+                
                 timeout = window.setTimeout(removeWhoIsTyping, 3000, '')
 
             }else if(document.getElementById('who-is-typing').innerHTML == ""){
-                document.getElementById('who-is-typing').innerHTML = ( data.user_id + ' is typing')
+                document.getElementById('who-is-typing').innerHTML = ( data.user_id + ' is typing ')
                 clearTimeout(timeout)
                 timeout = window.setTimeout(removeWhoIsTyping, 3000, data.user_id)
             }else{

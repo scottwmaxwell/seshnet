@@ -43,9 +43,9 @@ urlpatterns = [
     path('net/<str:net_id>/delete_message/', net_views.delete_message, name="net_delete_message"),
     path('directmessage/index/', dm_views.index, name='dm_index'),
     path('directmessage/<str:dc_id>/', dm_views.directmessage, name='directmessage'),
-    # path('directmessage/<str:dc_id>/save_image_message/', dm_views.save_image_form, name="dm_save_image"),
-    # path('directmessage/<str:dc_id>/get_messages/', dm_views.get_messages, name="dm_get_messages"),
-    # path('directmessage/<str:dc_id>/delete_message/', dm_views.delete_message, name="dm_delete_message"),
+    path('directmessage/<str:dc_id>/save_image_message/', dm_views.save_image_form, name="dm_save_image"),
+    path('directmessage/<str:dc_id>/get_messages/', dm_views.get_messages, name="dm_get_messages"),
+    path('directmessage/<str:dc_id>/delete_message/', dm_views.delete_message, name="dm_delete_message"),
 ]
 
 if settings.DEBUG:

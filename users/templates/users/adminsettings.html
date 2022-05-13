@@ -33,8 +33,7 @@
 
 .main{
 	border-radius: 30px;
-	background-color: white;
-	color: black;
+	background-color: #637e75;
 }
 
 .main:hover{
@@ -42,15 +41,28 @@
 	box-shadow: 3px 3px 3px white !important;
 }
 
+.save{
+	border-radius: 10px;
+	background-color: #637e75;
+	color: white;
+	margin-top: 20px;
+}
+
+.save:hover{
+	/*background-color:background-color:#444 !important;*/
+	box-shadow: 3px 3px 3px orange !important;
+}
+
+#id_role{
+	max-width: 50vh;
+}
+
 </style>
 <!-- Top Nav -->
 <nav id ="main" class="navbar navbar-expand-lg navbar-light bg-dark" style="opacity:98%; height:">
 	<div class="container-fluid">
-		{% if user.is_authenticated %}
-			<button class='btn main' style='background-color:#637e75; color: white;' onclick="location.href='{% url 'net_index' %}'">Back to Seshnet</button>
-		{% else %}
-			<button class='btn main' style='background-color:#637e75; color: white;' onclick="location.href='{% url 'login' %}'">Login</button>
-		{% endif %}
+		
+		<button class='btn main' style='background-color:#637e75; color: white;' onclick="location.href='{% url 'net_index' %}'">Back to Seshnet</button>
 	</div>
 </nav>
 
@@ -76,11 +88,12 @@
 				<form method="POST">
 					{% csrf_token %}
 					{{ form|crispy }}
-					<button class="btn bg-light" type="submit" name="user" value="{{ person.id }}">Save</button>
+					<button class="btn save" type="submit" name="user" value="{{ person.id }}">Save</button>
 				</form>
+				<hr style="background-color: white;">
 
 			{% endfor %}
-			<hr style="background-color: white;">
+			
 
 		</div>
 

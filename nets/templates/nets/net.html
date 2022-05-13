@@ -258,9 +258,6 @@ button.delete-message:hover{
     </div>
 </body>
 
-
-<!-- <button class="delete-message" id="{{message.id}}-delete">delete</button> -->
-
 <!-- SCRIPT FOR DISPLAYING MESSAGES -->
 <script>
 var last_message_author = "";
@@ -270,7 +267,7 @@ var last_message_date =  "";
 
     if (last_message_author == "{{message.author}}" && last_message_date == "{{message.date_sent}}"){
         
-        {% if message.author == user %}
+        {% if message.author == user or user.profile.role == 'Moderator' or user.profile.role == 'Admin' %}
             document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}" data_username="{{message.author}}" data_date="{{message.date_sent}}">{{message.content|urlize|linebreaksbr}}<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage({{message.id}})">delete</button></p>';
         {% else %}
             document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}" data_username="{{message.author}}" data_date="{{message.date_sent}}">{{message.content|urlize|linebreaksbr}}</p>';
@@ -287,7 +284,7 @@ var last_message_date =  "";
         document.getElementById('chat-log').innerHTML += '<small id="username-{{message.id}}">{{ message.author }}</small><small id="date-{{message.id}}"> @{{ message.date_sent }}</small><br>'
         
 
-        {% if message.author == user %}
+        {% if message.author == user or user.profile.role == 'Moderator' or user.profile.role == 'Admin' %}
             document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}" data_username="{{message.author}}" data_date="{{message.date_sent}}">{{message.content|urlize|linebreaksbr}}<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage({{message.id}})">delete</button></p>';
         {% else %}
             document.getElementById('chat-log').innerHTML += '<p class="message" id="{{ message.id }}" data_username="{{message.author}}" data_date="{{message.date_sent}}">{{message.content|urlize|linebreaksbr}}</p>';
@@ -568,7 +565,7 @@ chatSocket.onmessage = function(e) {
         if(last_message_author == data.username && last_message_date == data.date_sent){
 
 
-            if (data.username == '{{user.username}}'){
+            if (data.username == '{{user.username}}' || {{user.profile.role}} == 'Moderator' || {{user.profile.role}} == 'Admin'){
                 document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + ' data_username="' + data.username + '" data_date="' + data.date_sent + '">' + data.message + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage('+ data.message_id +')">delete</button></p>');
             }else{
                 document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + ' data_username="' + data.username + '" data_date="' + data.date_sent + '">' + data.message + '</p>');
@@ -587,7 +584,7 @@ chatSocket.onmessage = function(e) {
             document.getElementById('chat-log').innerHTML += ("<img class='rounded-circle' width='40px' height='40px' src='" + data.user_image +"' style='margin-right:20px; margin-bottom: 10px; float:left;' id='pfp-" + data.message_id + "'>");
             document.getElementById('chat-log').innerHTML += ('<small id="username-'+ data.message_id +'">' + data.username + '</small><small id="date-' + data.message_id + '"> @' + data.date_sent + '</small><br>')
             
-            if (data.username == '{{user.username}}'){
+            if (data.username == '{{user.username}}' || {{user.profile.role}} == 'Moderator' || {{user.profile.role}} == 'Admin'){
                 document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + ' data_username="' + data.username + '" data_date="' + data.date_sent + '">' + data.message + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage('+ data.message_id +')">delete</button></p>');
             }else{
                 document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + ' data_username="' + data.username + '" data_date="' + data.date_sent + '">' + data.message + '</p>');

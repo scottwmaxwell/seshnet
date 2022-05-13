@@ -1,21 +1,54 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import DirectChat, DirectMessage
 from django.http import JsonResponse
-from .forms import UploadImageMessage
+from .forms import UploadImageMessage, CreateDirectChat
 import datetime
 
 @login_required
 def index(request):
 
+	if request.method == "POST":
+		
+		form = CreateDirectChat(request.POST, request.FILES)
+		if form.is_valid():
+			if request.POST.get('createchat'):
+
+				user_id = int(request.POST.get('createchat'))
+				
+
+				if not DirectChat.objects.filter(participants=(user_id, request.user.id)):
+
+					directchat = DirectChat(title="test")
+					directchat.save()
+
+					directchat.participants.set((User.objects.get(id=user_id), request.user))
+
+					return redirect('/directmessage/' + str(directchat.id))
+				else:
+
+					chat = DirectChat.objects.filter(participants=(user_id, request.user.id))[0]
+
+					return redirect('/directmessage/' + str(chat.id))
+
+
+
+
 	# Get users for Right-navigation panel
 	users = User.objects.all()
 
+
+	# This form isn't really used... but I use it to validate the CSRF token (see above)...
+	createdirectchat = CreateDirectChat
+
 	# Get direct chats
+	directchats = DirectChat.objects.filter(participants=request.user)
 
 	context={
-		'users': users
+		'users': users,
+		'directchats': directchats,
+		'createdirectchat': createdirectchat,
 	}
 
 	return render(request, 'directmessage/index.html', context)
@@ -25,9 +58,35 @@ def index(request):
 def directmessage(request, dc_id):
 
 
+	if request.method == "POST":
+		
+		form = CreateDirectChat(request.POST, request.FILES)
+		if form.is_valid():
+			if request.POST.get('createchat'):
+
+				user_id = int(request.POST.get('createchat'))
+				
+
+				if not DirectChat.objects.filter(participants=(user_id, request.user.id)):
+
+					directchat = DirectChat(title="test")
+					directchat.save()
+
+					directchat.participants.set((User.objects.get(id=user_id), request.user))
+
+					return redirect('/directmessage/' + str(directchat.id))
+				else:
+
+					chat = DirectChat.objects.filter(participants=(user_id, request.user.id))[0]
+
+					return redirect('/directmessage/' + str(chat.id))
+
+
 	form = UploadImageMessage
 
 	directchat = DirectChat.objects.get(id=dc_id)
+
+	createdirectchat = CreateDirectChat
 
 	# Check if directchat exists
 	if directchat == None:
@@ -42,6 +101,9 @@ def directmessage(request, dc_id):
 	# Get users for Right-navigation panel
 	users = User.objects.all()
 
+	# Get direct chats
+	directchats = DirectChat.objects.filter(participants=request.user)
+
 	# Get last 50 messages
 	messages = DirectMessage.objects.filter(directchat=directchat)[::-1][:50][::-1]
 
@@ -50,7 +112,9 @@ def directmessage(request, dc_id):
 		'chat_id': dc_id,
 		'chat_name': directchat.title,
 		'messages': messages,
-		'form': form
+		'form': form,
+		'directchats': directchats,
+		'createdirectchat': createdirectchat,
 	}
 
 

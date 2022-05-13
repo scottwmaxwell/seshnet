@@ -94,7 +94,7 @@ body {
     position: absolute;
     bottom: 200px;
     padding-left: 20px;
-    background-color:#ce650a; 
+    background-color:#637e75; 
     color:white;
 }
 
@@ -120,7 +120,7 @@ body {
     position: absolute;
     bottom: 300px;
     padding-left: 20px;
-    background-color:#ce650a; 
+    background-color:#637e75; 
     color:white;
 }
 
@@ -197,10 +197,10 @@ body {
   overflow-y: auto;
 }
 
-/*.user-profile-pic{
-  width: 100px;
-  height: 100px;
-}*/
+.directmessage-section{
+  max-height: 45vh;
+  overflow-y: auto;
+}
 
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
 @media screen and (max-height: 450px) {
@@ -224,6 +224,19 @@ body {
     <hr style="color:#e0e0e0;">
     <!-- Put for loop here to show direct messages  -->
 
+    <div class="directmessage-section">
+    {% for directchat in directchats %}
+
+      {% for participant in directchat.participants.all %}
+        {% if participant != user %}
+          <a href="{% url 'directmessage' directchat.id %}"> <img class="rounded-circle" width="30" height="30" src="{{ participant.profile.image.url }}"> {{ participant.username }}</a>
+        {% endif %}
+      {% endfor %}
+
+    {% endfor %}
+    </div>
+
+
   <!-- Show Nets if in nets -->
   {% elif 'net' in request.path %}
     <h4 style="color:#e0e0e0; margin-left: 20px;">Nets</h4>
@@ -235,7 +248,7 @@ body {
         {% endfor %}
       </div>
       {% if user.profile.role == 'Admin' or user.profile.role == 'Moderator' %}
-        <button type="button" class="createnet btn btn-dark" data-toggle="modal" data-target="#exampleModalCenter">
+        <button type="button" class="createnet btn btn-dark" data-toggle="modal" data-target="#CreateNetModal">
           + Create a Net
         </button>
       {% endif %}
@@ -243,13 +256,13 @@ body {
   
   <!-- If not on directmessages show directmessage button -->
   {% if 'directmessage' not in request.path %}
-      <button class = 'btn dmbutton' style='background-color:#ce650a; color:white;' onclick="location.href='{% url 'dm_index' %}'">Direct Messages</button>
+      <button class = 'btn dmbutton' style='background-color:#637e75; color:white;' onclick="location.href='{% url 'dm_index' %}'">Direct Messages</button>
   {% endif %}
 
 
   <!-- If not on net or net_index, show net button -->
   {% if 'net' not in request.path and 'net/index' not in request.path %}
-      <button class = 'btn netbutton' style='background-color:#ce650a; color:white;' onclick="location.href='{% url 'net_index' %}'">Nets</button>
+      <button class = 'btn netbutton' style='background-color:#637e75; color:white;' onclick="location.href='{% url 'net_index' %}'">Nets</button>
   {% endif %}
 
     <!-- If user is authenticated -->
@@ -273,24 +286,36 @@ body {
 
   <!-- Parse users -->
   <div class="users-list">
-  {% for user in users %}
-    {% if user.profile.online and user.profile.online_indicator %}
-      <img class='rounded-circle' width='30px' height='30px' style="border-style: solid; border-color: green; float:left; margin-left:10px; margin-right:10px; border-width: 3px;" src="{{ user.profile.image.url }}">
-    {% else %}
-      <img class='rounded-circle border border-dark' width='30px' height='30px' style="float:left; margin-left:10px; margin-right:10px; " src="{{ user.profile.image.url }}">
-    {% endif %}
+  {% for temp in users %}
+    {% if temp != user %}
+      <form method="POST" id="create_chat_form" hidden>
+        {% csrf_token %}
+        <input id="create_chat_submit-{{temp.id}}" name="createchat" value="{{ temp.id }}" type="submit">  
+      </form>
 
-    <p style="color:white;">{{ user.username }}
+      <div class="dropdown">
+        {% if temp.profile.online and temp.profile.online_indicator %}
+          <input type="image" class='rounded-circle dropdown-toggle' data-toggle="dropdown" width='30px' height='30px'  style="border-style: solid; border-color: green; float:left; margin-left:10px; margin-right:10px; border-width: 3px;" src="{{ temp.profile.image.url }}">
+        {% else %}
+          <input type="image" class='rounded-circle border border-dark dropdown-toggle' data-toggle="dropdown" width='30px' height='30px' style="float:left; margin-left:10px; margin-right:10px; " src="{{ temp.profile.image.url }}">
+        {% endif %}
+      
+          <ul class="dropdown-menu" style="background-color:#545454;">
+            <li><button href="#" style="color:white; background-color:#545454; border:none;" onclick="createChatClick('{{temp.id}}')">Send a Message</button></li>
+          </ul>
 
-      {% if user.profile.online and user.profile.online_indicator %}
+    </div>
+
+    <p style="color:white;">{{ temp.username }}
+
+      {% if temp.profile.online and temp.profile.online_indicator %}
         <small>- Online</small>
       {% else %}
         <small>- Offline</small>
       {% endif %}
-
     </p>
 
-
+    {% endif %}
   {% endfor %}
   </div>
 
@@ -364,6 +389,12 @@ function openRightNav() {
 function closeRightNav() {
   document.getElementById("user-sidebar").style.width = "0";
   // document.getElementById("").style.marginLeft= "0";
+}
+
+
+function createChatClick(user){
+
+  document.getElementById("create_chat_submit-" + user).click()
 }
 
 </script>

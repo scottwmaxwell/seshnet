@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class DirectChat(models.Model):
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-	title = models.CharField(max_length=20, unique=True)
+	title = models.CharField(max_length=20, unique=False)
 	participants = models.ManyToManyField(User, related_name='participants', blank=True)
 
 class DirectMessage(models.Model):

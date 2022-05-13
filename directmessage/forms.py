@@ -1,6 +1,6 @@
 from django.forms import ModelForm, FileInput, TextInput
 import django.forms as forms
-from .models import DirectMessage
+from .models import DirectMessage, DirectChat
 
 class UploadImageMessage(ModelForm):
 	
@@ -14,3 +14,14 @@ class UploadImageMessage(ModelForm):
 			'content': TextInput(),
         	'image': FileInput()
         }
+
+
+class CreateDirectChat(ModelForm):
+
+	class Meta:
+		model = DirectChat
+		fields = ['participants']
+
+		widgets = {
+			'participants': TextInput()
+		}

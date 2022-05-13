@@ -5,6 +5,8 @@ from users import views
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .forms import UploadImageMessage, CreateNet
+from directmessage.forms import CreateDirectChat
+from directmessage.models import DirectChat
 from django.http import JsonResponse
 import datetime
 
@@ -22,6 +24,30 @@ def index(request):
 			# Check is current user is admin
 			if request.user.profile.role == "Admin":
 				form.save()
+
+
+		form = CreateDirectChat(request.POST, request.FILES)
+		if form.is_valid():
+			if request.POST.get('createchat'):
+
+				user_id = int(request.POST.get('createchat'))
+				
+				if not DirectChat.objects.filter(participants=(user_id, request.user.id)):
+
+					directchat = DirectChat(title="test")
+					directchat.save()
+
+					directchat.participants.set((User.objects.get(id=user_id), request.user))
+
+					return redirect('/directmessage/' + str(directchat.id))
+				else:
+
+					chat = DirectChat.objects.filter(participants=(user_id, request.user.id))[0]
+
+					return redirect('/directmessage/' + str(chat.id))
+
+
+
 
 	createnet_form = CreateNet
 
@@ -48,6 +74,27 @@ def net(request, net_id):
 			# Check is current user is admin
 			if request.user.profile.role == "Admin":
 				form.save()
+
+
+		form = CreateDirectChat(request.POST, request.FILES)
+		if form.is_valid():
+			if request.POST.get('createchat'):
+
+				user_id = int(request.POST.get('createchat'))
+				
+				if not DirectChat.objects.filter(participants=(user_id, request.user.id)):
+
+					directchat = DirectChat(title="test")
+					directchat.save()
+
+					directchat.participants.set((User.objects.get(id=user_id), request.user))
+
+					return redirect('/directmessage/' + str(directchat.id))
+				else:
+
+					chat = DirectChat.objects.filter(participants=(user_id, request.user.id))[0]
+
+					return redirect('/directmessage/' + str(chat.id))
 
 
 	form = UploadImageMessage

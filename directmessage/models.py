@@ -26,3 +26,15 @@ class DirectMessage(models.Model):
 				output_size = (500,500)
 				img.thumbnail(output_size)
 				img.save(self.image.path)
+
+	def delete(self, *args, **kwargs):
+		# You have to prepare what you need before delete the model
+		if self.image:
+			storage, path = self.image.storage, self.image.path
+
+		# Delete the model before the file
+		super(DirectMessage, self).delete(*args, **kwargs)
+
+		if self.image:
+			# Delete the file after the model
+			storage.delete(path)

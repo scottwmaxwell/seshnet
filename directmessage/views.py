@@ -5,6 +5,7 @@ from .models import DirectChat, DirectMessage
 from django.http import JsonResponse
 from .forms import UploadImageMessage, CreateDirectChat
 import datetime
+import os
 
 @login_required
 def index(request):
@@ -195,6 +196,9 @@ def delete_message(request, dc_id):
 
 	# Extra check to ensure the person deleting the message is the author
 	if request.user == message_to_delete.author:
+
+		# Delete the message
+		message_to_delete.delete()
 
 		# Delete the message
 		message_to_delete.delete()

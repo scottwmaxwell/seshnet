@@ -94,7 +94,7 @@ body {
     position: absolute;
     bottom: 200px;
     padding-left: 20px;
-    background-color:#637e75; 
+    background-color: #637e75;
     color:white;
 }
 
@@ -107,7 +107,7 @@ body {
     position: absolute;
     bottom: 100px;
     padding-left: 20px;
-    background-color:#601d14; 
+    background-color: #601a1a; 
     color:white;
 }
 
@@ -133,6 +133,8 @@ body {
     position: absolute;
     bottom: 250px;
     padding-left: 20px;
+    background-color: #637e75;
+    color: white;
 }
 
 .dmbutton:hover{
@@ -144,6 +146,8 @@ body {
     position: absolute;
     bottom: 250px;
     padding-left: 20px;
+    background-color: #637e75;
+    color:white;
 }
 
 .createnet{
@@ -256,13 +260,13 @@ body {
   
   <!-- If not on directmessages show directmessage button -->
   {% if 'directmessage' not in request.path %}
-      <button class = 'btn dmbutton' style='background-color:#637e75; color:white;' onclick="location.href='{% url 'dm_index' %}'">Direct Messages</button>
+      <button class = 'btn dmbutton' onclick="location.href='{% url 'dm_index' %}'">Direct Messages</button>
   {% endif %}
 
 
   <!-- If not on net or net_index, show net button -->
   {% if 'net' not in request.path and 'net/index' not in request.path %}
-      <button class = 'btn netbutton' style='background-color:#637e75; color:white;' onclick="location.href='{% url 'net_index' %}'">Nets</button>
+      <button class = 'btn netbutton' onclick="location.href='{% url 'net_index' %}'">Nets</button>
   {% endif %}
 
     <!-- If user is authenticated -->

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserSignUpForm, ProfileUpdate
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 def signup(request):
 
@@ -49,7 +50,15 @@ def profile(request):
 def adminsettings(request):
 
 	if request.user.profile.role == "Admin":
-		return render(request, 'users/adminsettings.html')
+
+		# Get all users
+		users = User.objects.all()
+
+		context = {
+			'users':users,
+		}
+
+		return render(request, 'users/adminsettings.html', context)
 
 	else:
 		return render(request, 'users/error.html')

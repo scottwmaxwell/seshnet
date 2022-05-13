@@ -23,12 +23,13 @@
 
 .main{
 	border-radius: 30px;
-	background-color: #ce650a; 
-	color: white;
+	background-color: white;
+	color: black;
 }
 
 .main:hover{
-	background-color:background-color:#444 !important;
+	/*background-color:background-color:#444 !important;*/
+	box-shadow: 3px 3px 3px orange !important;
 }
 
 </style>
@@ -37,24 +38,24 @@
 <nav id ="main" class="navbar navbar-expand-lg navbar-light bg-dark" style="opacity:98%; height:">
 	<div class="container-fluid">
 		{% if user.is_authenticated %}
-			<button class='btn main' style='background-color: #ce650a; color: white;' onclick="location.href='{% url 'net_index' %}'">Open Seshnet</button>
+			<button class='btn main' style='background-color:white; color: black;' onclick="location.href='{% url 'net_index' %}'">Open Seshnet</button>
 		{% else %}
 			<button class='btn main' onclick="location.href='{% url 'login' %}'">Login</button>
 		{% endif %}
 	</div>
 </nav>
 
-<body style="background-color:#111;">
+<body style="background-color:#637e75;">
 
 
     <div class='row m-0'>
 
         <!-- Buffer to center content -->
-        <div class='col-sm-2 main_wrap' style="overflow: hidden;"></div>
+        <!-- <div class='col-sm-2 main_wrap' style="overflow: hidden;"></div> -->
 
 
         <!-- Centered Content -->
-        <div class='col-sm-8' style="overflow: hidden; color:white; background-color:#111;">
+        <div class='col-sm-8 mx-auto' style="overflow: hidden; color:white; background-color:#637e75;">
 
             <div class="p-3 mb-2 text-light">
             	<center>
@@ -62,7 +63,7 @@
 				
 
 				{% if user.is_authenticated %}
-					<button class='btn main' style='background-color: #ce650a; color: white;' onclick="location.href='{% url 'net_index' %}'">Open Seshnet</button>
+					<button class='btn main' onclick="location.href='{% url 'net_index' %}'">Open Seshnet</button>
 				{% else %}
 					<button class='btn main' onclick="location.href='{% url 'login' %}'">Login</button>
 					<button class='btn main' style='background-color: #444; color: white;' onclick="location.href='{% url 'signup' %}'">Sign Up</button>
@@ -76,7 +77,7 @@
 
 
         <!-- Buffer to center content -->
-        <div class='col-sm-2'></div>
+        <!-- <div class='col-sm-2'></div> -->
     </div>
 
 </body>

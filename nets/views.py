@@ -9,6 +9,7 @@ from directmessage.forms import CreateDirectChat
 from directmessage.models import DirectChat
 from django.http import JsonResponse
 import datetime
+import os
 
 def home(request):
 	return render(request, 'nets/home.html')
@@ -45,9 +46,6 @@ def index(request):
 					chat = DirectChat.objects.filter(participants=(user_id, request.user.id))[0]
 
 					return redirect('/directmessage/' + str(chat.id))
-
-
-
 
 	createnet_form = CreateNet
 
@@ -188,8 +186,8 @@ def delete_message(request, net_id):
 
 	message_to_delete = Message.objects.get(id=messageID)
 
-	# Extra check to ensure the person deleting the message is the author
-	if request.user == message_to_delete.author:
+	# Extra check to ensure the person deleting the message is the author, admin, or moderator
+	if request.user == message_to_delete.author or request.user.profile.role == 'Admin' or request.user.profile.role == 'Moderator':
 
 		# Delete the message
 		message_to_delete.delete()

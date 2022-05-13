@@ -32,7 +32,7 @@ urlpatterns = [
     path('', net_views.home, name='home'),
     path('signup/', users_views.signup, name='signup'),
     path('settings/', users_views.settings, name='settings'),
-    path('adminsettings/', users_views.settings, name="adminsettings"),
+    path('adminsettings/', users_views.adminsettings, name="adminsettings"),
     path('profile/', users_views.profile, name='profile'),
     path('login', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='nets/home.html'), name='logout'),

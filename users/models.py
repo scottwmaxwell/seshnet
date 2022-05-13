@@ -55,3 +55,8 @@ class Profile(models.Model):
 				output_size = (500,500)
 				img.thumbnail(output_size)
 				img.save(self.image.path)
+
+
+class ServerSettings(models.Model):
+	private = models.BooleanField(default=False)
+

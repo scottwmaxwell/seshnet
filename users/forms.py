@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from crispy_forms.helper import FormHelper
-from .models import Profile
+from .models import Profile, ServerSettings
 
 class UserSignUpForm(UserCreationForm):
 	# email = forms.EmailField()
@@ -30,4 +30,24 @@ class ProfileUpdate(forms.ModelForm):
 		widgets = {
 			'image':forms.FileInput()
 		}
+
+# Only for Admins
+class UpdateRole(forms.ModelForm):
+
+	class Meta:
+
+		role = forms.ChoiceField(choices=('Admin', 'Moderator', 'User'))
+
+		model = Profile
+		fields = ['role']
+
+
+
+class UpdateServerSettings(forms.ModelForm):
+
+	class Meta:
+		private = forms.ChoiceField(choices=(True, False))
+
+		model = ServerSettings
+		fields = ['private']
 

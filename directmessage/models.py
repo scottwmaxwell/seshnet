@@ -20,7 +20,6 @@ class DirectMessage(models.Model):
 		super(DirectMessage, self).save(*args, **kwargs)
 		
 		if self.image:
-
 			img = Image.open(self.image.path)
 			if img.height > 500 or img.width > 500:
 				output_size = (500,500)
@@ -28,7 +27,7 @@ class DirectMessage(models.Model):
 				img.save(self.image.path)
 
 	def delete(self, *args, **kwargs):
-		# You have to prepare what you need before delete the model
+
 		if self.image:
 			storage, path = self.image.storage, self.image.path
 

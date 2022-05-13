@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import UserSignUpForm, ProfileUpdate
+from .forms import UserSignUpForm, ProfileUpdate, UpdateServerSettings, UpdateRole
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
@@ -49,13 +49,35 @@ def profile(request):
 
 def adminsettings(request):
 
+	if request.method == 'POST':
+		user_id = request.POST.get('user')
+		user = User.objects.get(id=user_id)
+
+		form = UpdateRole(request.POST, instance=user.profile)
+		if form.is_valid():
+			form.save()
+
+
+
 	if request.user.profile.role == "Admin":
 
 		# Get all users
 		users = User.objects.all()
 
+
+		updateserversettings_form = UpdateServerSettings
+
+		updaterole_forms = {}
+		for user in users:
+
+			updaterole_forms[user] = UpdateRole(initial={'role': user.profile.role })
+
+
+
 		context = {
 			'users':users,
+			'updateserversettings_form': updateserversettings_form,
+			'updaterole_forms': updaterole_forms,
 		}
 
 		return render(request, 'users/adminsettings.html', context)

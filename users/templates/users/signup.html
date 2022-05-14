@@ -30,7 +30,7 @@ ul li::marker {
 
 </style>
 
-<body style="background-color:#111; color:white;">
+<!-- <body style="background-color:#111; color:white;">
 	<center>
 		<div class="container">
 		<form method="POST">
@@ -51,6 +51,44 @@ ul li::marker {
 		</form>
 		</div>
 	</center>
+</body> -->
+
+<body style="background-color:#111; color:white;">
+	<div class='row m-0'>
+
+		<!-- Buffer to center content -->
+		<div class='col-sm-3 main_wrap' style="overflow: hidden;">
+		</div>
+
+
+		<!-- Centered Content -->
+		<div class='col-sm-5 mx-auto' style="overflow: hidden;">
+
+			<div class="p-3 mb-2 bg-dark text-light" style="border-radius:10px; color:black; margin-top:100px;">		
+					<form method="POST">
+						{% csrf_token%}
+						<fieldset class="form-group">
+							<legend class=''><img width="50" height="50" src="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png"> Sign Up for Seshnet</legend>
+								{{ form|crispy }}
+						</fieldset>
+						<div>
+							<button class = 'btn' style='background-color: #637e75; color: white; margin-top:20px; margin-bottom:10px;' type="Submit">Log in</button>
+						</div>
+
+						<div>
+							<small>
+							Already have an account? <a href="{% url 'login' %}">Log in</a>
+							</small>
+						</div>
+					</form>
+			</div>
+		</div>
+
+
+		<!-- Buffer to center content -->
+		<div class='col-sm-3 main_wrap' style="overflow: hidden;">
+		</div>
+
 </body>
 
 </html>

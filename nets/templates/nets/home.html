@@ -23,8 +23,8 @@
 
 .main{
 	border-radius: 30px;
-	background-color: white;
-	color: black;
+	background-color: #637e75;
+	color: white;
 }
 
 .main:hover{
@@ -45,7 +45,7 @@
 	</div>
 </nav>
 
-<body style="background-color:#637e75;">
+<body style="background-color:#111;">
 
 
     <div class='row m-0'>
@@ -55,18 +55,24 @@
 
 
         <!-- Centered Content -->
-        <div class='col-sm-8 mx-auto' style="overflow: hidden; color:white; background-color:#637e75;">
+        <div class='col-sm-8 mx-auto' style="overflow: hidden; color:white; background-color:#111;">
 
             <div class="p-3 mb-2 text-light">
             	<center>
-				<h1 style="color:white;"><img width="50" height="50" src="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png"> Welcome to Seshnet</h1>
+				<h1 style="color:white;"><img width="50" height="50" src="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png"> Welcome to {{serversettings.name}}</h1>
+
+				<h6 style="color:gray;">A Seshnet server</h6>
 				
 
 				{% if user.is_authenticated %}
 					<button class='btn main' onclick="location.href='{% url 'net_index' %}'">Open Seshnet</button>
 				{% else %}
 					<button class='btn main' onclick="location.href='{% url 'login' %}'">Login</button>
-					<button class='btn main' style='background-color: #444; color: white;' onclick="location.href='{% url 'signup' %}'">Sign Up</button>
+
+					{% if serversettings.private == False %}
+						<button class='btn main' style='background-color: #444; color: white;' onclick="location.href='{% url 'signup' %}'">Sign Up</button>
+					{% endif %}
+
 				{% endif %}
 				</center>
 
@@ -78,6 +84,7 @@
 
         <!-- Buffer to center content -->
         <!-- <div class='col-sm-2'></div> -->
+
     </div>
 
 </body>

@@ -8,11 +8,23 @@ from .forms import UploadImageMessage, CreateNet
 from directmessage.forms import CreateDirectChat
 from directmessage.models import DirectChat
 from django.http import JsonResponse
+from users.models import ServerSettings
 import datetime
 import os
 
 def home(request):
-	return render(request, 'nets/home.html')
+
+	serversettings = None
+
+	# Check if sever settings exist
+	if ServerSettings.objects.all():
+		serversettings = ServerSettings.objects.all()[0]
+
+	context = {
+		'serversettings': serversettings
+	}
+
+	return render(request, 'nets/home.html', context)
 
 @login_required
 def index(request):

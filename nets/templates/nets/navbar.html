@@ -31,6 +31,14 @@ body {
   color: #e0e0e0;
   position: absolute;
   margin-left: 18%;
+  margin-top: 4px;
+}
+
+.chat_header{
+  color: #e0e0e0;
+  position: absolute;
+  margin-left: 18%;
+  margin-top: 4px;
 }
 
 .sidebar a {
@@ -331,8 +339,12 @@ body {
   <button id="mybtn" class="openbtn" onclick="toggleLeftNav()">☰</button>
   <button id="userbtn" class="openusrbtn" onclick="toggleRightNav()"><i class="icon-user"></i></button>
   
-  {% if 'index' not in request.path and 'directmessage' not in request.path %}
+  {% if 'index' not in request.path and 'net' in request.path %}
     <h5 class="net_header"># {{net_name}}</h5>
+  {% endif %}
+
+  {% if 'index' not in request.path and 'directmessage' in request.path %}
+    <h5 class="chat_header"><img class="rounded-circle" width="35" height="35" src="{{ other_user.profile.image.url }}"> {{other_user.username}}</h5>
   {% endif %}
 
 </nav>

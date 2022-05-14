@@ -46,8 +46,16 @@ class UpdateRole(forms.ModelForm):
 class UpdateServerSettings(forms.ModelForm):
 
 	class Meta:
-		private = forms.ChoiceField(choices=(True, False))
-
+		
 		model = ServerSettings
-		fields = ['private']
+
+		fields = ['name', 'description', 'private']
+
+		widgets = {
+			'private':forms.CheckboxInput(attrs={
+                'data-toggle': 'toggle',
+                'data-onstyle': 'warning',
+                'data-offstyle': 'danger',
+              	 })
+		}
 

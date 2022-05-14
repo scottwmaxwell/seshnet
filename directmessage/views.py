@@ -99,6 +99,13 @@ def directmessage(request, dc_id):
 		return render(request, 'directmessage/error.html')
 
 
+	for participant in directchat.participants.all():
+		if request.user != participant:
+
+			# Set other user
+			other_user = participant
+
+
 	# Get users for Right-navigation panel
 	users = User.objects.all()
 
@@ -111,11 +118,11 @@ def directmessage(request, dc_id):
 	context={
 		'users': users,
 		'chat_id': dc_id,
-		'chat_name': directchat.title,
 		'messages': messages,
 		'form': form,
 		'directchats': directchats,
 		'createdirectchat': createdirectchat,
+		'other_user': other_user
 	}
 
 

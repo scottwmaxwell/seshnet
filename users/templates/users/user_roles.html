@@ -1,0 +1,130 @@
+{% load crispy_forms_filters %}
+
+<head>
+	<meta charset="UTF-8">
+	
+	<!-- For mobile devices -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- Bootstrap -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+	<!-- For icons -->
+	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+
+	<!-- JQUERY -->
+	<script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+
+	<!-- Toggle button -->
+	<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+	<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+	<!-- For titlebar icon -->
+	<link rel="icon" href="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png" type="image/icon type">
+
+</head>
+
+<header>
+	<title>Admin Settings</title>
+</header>
+
+
+<style>
+
+.main{
+	border-radius: 30px;
+	background-color: #637e75;
+	color: white;
+}
+
+.main:hover{
+	color: black;
+}
+
+.save{
+	border-radius: 10px;
+	background-color: #637e75;
+	color: white;
+	margin-top: 20px;
+	border: None;
+	/*float: right;*/
+}
+
+.save:hover{
+	/*background-color:background-color:#444 !important;*/
+	box-shadow: 3px 3px 3px orange !important;
+}
+
+#id_role{
+	max-width: 20vh;
+	background-color: black;
+	color: white;
+	border: None;
+}
+
+</style>
+<!-- Top Nav -->
+<nav id ="main" class="navbar navbar-expand-lg navbar-light bg-dark" style="opacity:98%; height:">
+	<div class="container-fluid">
+
+		<button class='btn main' onclick="location.href='{% url 'net_index' %}'">Back to Seshnet</button>
+
+	</div>
+
+
+</nav>
+
+<body style="background-color:#17181c;">
+
+	<div class='row m-0'>
+
+	    <!-- Buffer to center content -->
+	    <div class='col-sm-2 main_wrap' style="overflow: hidden;"></div>
+
+	    <!-- Centered Content -->
+	    <div class='centered-div col-sm-8' style="overflow: hidden; color:white; background-color:#17181c;">
+
+			<h1 style="color:white;">Administrator Settings</h1>
+			<hr style="background-color: white;">
+
+		<ul class="nav nav-tabs">
+		  <li class="nav-item">
+		    <a class="nav-link active" aria-current="page" href="{% url 'adminsettings' %}">User Roles</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" style="color:#637e75;" href="{% url 'serversettings' %}">Server Settings</a>
+		  </li>
+		</ul>
+
+			<br>
+			<h3>Roles Explanation</h3>
+			<ul>
+				<li><small>Admin - Can create/delete nets, delete any net messages, and access admin settings</small></li>
+				<li><small>Moderator - Can create/delete nets and delete any net messages</small></li>
+				<li><small>User - Can only delete their own messages</small></li>
+			</ul>
+
+
+			{% for person, form in updaterole_forms.items %}
+				
+				<hr style="background-color: white; clear: both;">
+				<p><img class="rounded-circle" width="30" height="30" src="{{person.profile.image.url}}"> {{person.username}}</p>
+
+				<form style="display:inline;" class="role-form" method="POST">
+					{% csrf_token %}
+					{{ form|crispy }}
+					<button class="btn save" type="submit" name="user" value="{{ person.id }}">Save</button>
+				</form>
+			{% endfor %}
+
+			<hr>
+			
+
+		</div>
+
+	    <!-- Buffer to center content -->
+	    <div class='col-sm-2'></div>
+
+	</div>
+
+</body>

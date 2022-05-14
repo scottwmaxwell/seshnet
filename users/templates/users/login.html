@@ -27,14 +27,22 @@
 
 </style>
 
-	<body style="background-color:#111; color:white;">
-		<center>
-			<div class="container">
-				
+<body style="background-color:#111; color:white;">
+	<div class='row m-0'>
+
+		<!-- Buffer to center content -->
+		<div class='col-sm-3 main_wrap' style="overflow: hidden;">
+		</div>
+
+
+		<!-- Centered Content -->
+		<div class='col-sm-5 mx-auto' style="overflow: hidden;">
+
+			<div class="p-3 mb-2 bg-dark text-light" style="border-radius:10px; color:black; margin-top:100px;">		
 					<form method="POST">
 						{% csrf_token%}
 						<fieldset class="form-group">
-							<legend class=''>Log into Seshnet</legend>
+							<legend class=''><img width="50" height="50" src="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png"> Log into Seshnet</legend>
 								{{ form|crispy }}
 						</fieldset>
 						<div>
@@ -48,7 +56,13 @@
 						</div>
 					</form>
 			</div>
-		</center>
-	</body>
+		</div>
+
+
+		<!-- Buffer to center content -->
+		<div class='col-sm-3 main_wrap' style="overflow: hidden;">
+		</div>
+
+</body>
 
 </html>

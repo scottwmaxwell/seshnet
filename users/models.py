@@ -4,6 +4,7 @@ from PIL import Image
 from django.core.cache import cache
 import datetime
 from seshnet import settings
+import uuid
 
 class Profile(models.Model):
 	
@@ -58,5 +59,9 @@ class Profile(models.Model):
 
 
 class ServerSettings(models.Model):
+
+	name = models.CharField(max_length=20, unique=True, default="session")
 	private = models.BooleanField(default=False)
+	description = models.TextField(null=True)
+	secret = models.CharField(unique=True, default=uuid.uuid4().hex, max_length=100)
 

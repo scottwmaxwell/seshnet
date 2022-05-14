@@ -45,7 +45,7 @@ def index(request):
 
 				user_id = int(request.POST.get('createchat'))
 				
-				if not DirectChat.objects.filter(participants=(user_id, request.user.id)):
+				if not DirectChat.objects.filter(participants=(user_id)).filter(participants=(request.user.id)):
 
 					directchat = DirectChat(title="test")
 					directchat.save()
@@ -55,7 +55,7 @@ def index(request):
 					return redirect('/directmessage/' + str(directchat.id))
 				else:
 
-					chat = DirectChat.objects.filter(participants=(user_id, request.user.id))[0]
+					chat = DirectChat.objects.filter(participants=(user_id)).filter(participants=(request.user.id))[0]
 
 					return redirect('/directmessage/' + str(chat.id))
 
@@ -92,7 +92,7 @@ def net(request, net_id):
 
 				user_id = int(request.POST.get('createchat'))
 				
-				if not DirectChat.objects.filter(participants=(user_id, request.user.id)):
+				if not DirectChat.objects.filter(participants=(user_id)).filter(participants=(request.user.id)):
 
 					directchat = DirectChat(title="test")
 					directchat.save()
@@ -102,7 +102,7 @@ def net(request, net_id):
 					return redirect('/directmessage/' + str(directchat.id))
 				else:
 
-					chat = DirectChat.objects.filter(participants=(user_id, request.user.id))[0]
+					chat = DirectChat.objects.filter(participants=(user_id)).filter(participants=(request.user.id))[0]
 
 					return redirect('/directmessage/' + str(chat.id))
 

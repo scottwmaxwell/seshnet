@@ -45,14 +45,17 @@
 	border-radius: 10px;
 	background-color: #637e75;
 	color: white;
-	margin-top: 20px;
+	margin-top: 25px;
 	border: None;
-	/*float: right;*/
+	height: 35px;
+	width: 60px;
+	text-align: center;
 }
 
 .save:hover{
-	/*background-color:background-color:#444 !important;*/
-	box-shadow: 3px 3px 3px orange !important;
+	color: white;
+	background-color:#3c514a!important;
+	/*box-shadow: 3px 3px 3px orange !important;*/
 }
 
 #id_role{
@@ -106,15 +109,31 @@
 
 
 			{% for person, form in updaterole_forms.items %}
-				
-				<hr style="background-color: white; clear: both;">
-				<p><img class="rounded-circle" width="30" height="30" src="{{person.profile.image.url}}"> {{person.username}}</p>
 
-				<form style="display:inline;" class="role-form" method="POST">
-					{% csrf_token %}
-					{{ form|crispy }}
-					<button class="btn save" type="submit" name="user" value="{{ person.id }}">Save</button>
-				</form>
+				<hr style="background-color: white; clear: both;">
+
+				<p><img class="rounded-circle" width="30" height="30" src="{{person.profile.image.url}}"> {{person.username}}</p>	
+				
+				<div class="d-flex flex-row">
+
+					  <!-- <div class="p-1 ">Role:</div> -->
+					 	
+					  <div class="p-1 ">
+					  	
+						<form method="POST">
+							{% csrf_token %}
+							{{ form|crispy }}
+							</div>
+							<div class="p-1 "><button class="save" type="submit" name="user" value="{{ person.id }}">Save</button></div>
+							
+						</form>
+					  
+
+
+					  <!-- <div class="p-1 ">Flex item 3</div> -->
+
+				</div>
+
 			{% endfor %}
 
 			<hr>

@@ -28,8 +28,9 @@
 }
 
 .main:hover{
-	/*background-color:background-color:#444 !important;*/
-	box-shadow: 3px 3px 3px orange !important;
+	color: white;
+	background-color:#3c514a !important;
+/*	box-shadow: 3px 3px 3px green !important;*/
 }
 
 </style>
@@ -61,7 +62,7 @@
             	<center>
 				<h1 style="color:white;"><img width="50" height="50" src="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png"> Welcome to {{serversettings.name}}</h1>
 
-				<h6 style="color:gray;">A Seshnet server</h6>
+				<h6 style="color:gray; margin-bottom:30px;">A Seshnet server</h6>
 				
 
 				{% if user.is_authenticated %}

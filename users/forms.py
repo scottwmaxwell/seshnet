@@ -41,8 +41,6 @@ class UpdateRole(forms.ModelForm):
 		model = Profile
 		fields = ['role']
 
-
-
 class UpdateServerSettings(forms.ModelForm):
 
 	class Meta:
@@ -54,8 +52,8 @@ class UpdateServerSettings(forms.ModelForm):
 		widgets = {
 			'private':forms.CheckboxInput(attrs={
                 'data-toggle': 'toggle',
-                'data-onstyle': 'warning',
-                'data-offstyle': 'danger',
+                'data-onstyle': 'default',
+                'data-offstyle': 'default',
               	 })
 		}
 

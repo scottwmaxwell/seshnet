@@ -19,7 +19,7 @@ def index(request):
 				user_id = int(request.POST.get('createchat'))
 				
 
-				if not DirectChat.objects.filter(participants=(user_id, request.user.id)):
+				if not DirectChat.objects.filter(participants=(user_id)).filter(participants=(request.user.id)):
 
 					directchat = DirectChat(title="test")
 					directchat.save()
@@ -29,7 +29,7 @@ def index(request):
 					return redirect('/directmessage/' + str(directchat.id))
 				else:
 
-					chat = DirectChat.objects.filter(participants=(user_id, request.user.id))[0]
+					chat = DirectChat.objects.filter(participants=(user_id)).filter(participants=(request.user.id))[0]
 
 					return redirect('/directmessage/' + str(chat.id))
 
@@ -68,7 +68,7 @@ def directmessage(request, dc_id):
 				user_id = int(request.POST.get('createchat'))
 				
 
-				if not DirectChat.objects.filter(participants=(user_id, request.user.id)):
+				if not DirectChat.objects.filter(participants=(user_id)).filter(participants=(request.user.id)):
 
 					directchat = DirectChat(title="test")
 					directchat.save()
@@ -78,7 +78,7 @@ def directmessage(request, dc_id):
 					return redirect('/directmessage/' + str(directchat.id))
 				else:
 
-					chat = DirectChat.objects.filter(participants=(user_id, request.user.id))[0]
+					chat = DirectChat.objects.filter(participants=(user_id)).filter(participants=(request.user.id))[0]
 
 					return redirect('/directmessage/' + str(chat.id))
 
@@ -96,6 +96,9 @@ def directmessage(request, dc_id):
 	# Check if user is a participant in chat
 	if request.user not in directchat.participants.all():
 
+		print("\n\nCURRENT USER:", request.user)
+		print("USERS IN CHAT: ", directchat.participants.all(), "\n\n")
+
 		return render(request, 'directmessage/error.html')
 
 
@@ -109,7 +112,7 @@ def directmessage(request, dc_id):
 	# Get users for Right-navigation panel
 	users = User.objects.all()
 
-	# Get direct chats
+	# Get direct chats (To show in navbar)
 	directchats = DirectChat.objects.filter(participants=request.user)
 
 	# Get last 50 messages

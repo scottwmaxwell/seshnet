@@ -198,17 +198,12 @@ def get_messages(request, dc_id):
 @login_required
 def delete_message(request, dc_id):
 
-	print('hello')
-
 	messageID = request.GET.get('messageID', None)
 
 	message_to_delete = DirectMessage.objects.get(id=messageID)
 
 	# Extra check to ensure the person deleting the message is the author
 	if request.user == message_to_delete.author:
-
-		# Delete the message
-		message_to_delete.delete()
 
 		# Delete the message
 		message_to_delete.delete()

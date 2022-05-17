@@ -18,6 +18,34 @@
         text-align: left;
         border-radius: 10px;
       }
+
+    .createnetbtn{
+        color: white;
+        background-color: #637e75 !important;
+    }
+
+    .createnetbtn:hover{
+        background-color: #3c514a !important;
+    }
+
+    .modal-body{
+        border: none;
+    }
+
+    .modal-header{
+        border: none;
+    }
+
+    .modal-footer{
+        border: none;
+    }
+
+    #id_title{
+        color: white;
+        background: #111;
+        border: none;
+    }
+
 </style>
 
 <body style="background-color:#111;">
@@ -38,7 +66,7 @@
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ createnet_form|crispy }}
-                <input class="createnetbtn btn btn-primary"  type="submit" value="Create">
+                <input class="createnetbtn btn"  type="submit" value="Create">
             </form>
 
       </div>

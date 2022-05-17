@@ -24,3 +24,8 @@ class CreateNet(ModelForm):
 		widgets = {
 			'title': TextInput()
 		}
+
+class DeleteNet(ModelForm):
+	class Meta:
+		model = Net
+		fields=[]

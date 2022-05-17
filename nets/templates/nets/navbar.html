@@ -34,6 +34,22 @@ body {
   margin-top: 4px;
 }
 
+.delete-net{
+
+  position: absolute;
+  margin-left: 46%;
+  margin-top: 4px;
+  background-color: #444;
+  opacity: 10%;
+  color: white;
+}
+
+.delete-net:hover{
+  color: white;
+  background-color: #444;
+  opacity: 50%;
+}
+
 .chat_header{
   color: #e0e0e0;
   position: absolute;
@@ -341,6 +357,18 @@ body {
   
   {% if 'index' not in request.path and 'net' in request.path %}
     <h5 class="net_header"># {{net_name}}</h5>
+
+    {% if user.profile.role == "Admin" or user.profile.role == "Moderator" %}
+
+      <form method="POST" hidden>
+        {% csrf_token %}
+        {{ deletenet_form }}
+        <input type="submit" name="net_id" value="{{net_id}}" id="submit_delete_net">
+      </form>
+
+      <button class="btn delete-net" onclick="deleteNet()">Delete Net</button>
+    {% endif %}
+
   {% endif %}
 
   {% if 'index' not in request.path and 'directmessage' in request.path %}
@@ -411,6 +439,12 @@ function closeRightNav() {
 function createChatClick(user){
 
   document.getElementById("create_chat_submit-" + user).click()
+}
+
+function deleteNet(){
+  if (window.confirm("Are you sure you want to delete this net?\nDoing so will delete all the messages too! D:")){
+    document.getElementById("submit_delete_net").click()
+  }
 }
 
 </script>

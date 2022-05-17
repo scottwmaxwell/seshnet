@@ -16,6 +16,11 @@
 	<!-- For icons -->
 	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
+	<!-- For titlebar icon -->
+	<link rel="icon" href="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png" type="image/icon type">
+
+	<title>{{serversettings.name}} | Sign up</title>
+
 </head>
 
 <style>
@@ -28,30 +33,18 @@ ul li::marker {
 	color: #111;
 }
 
+.signup-button{
+	background-color: #637e75; 
+	color: white; 
+	margin-top:20px; 
+	margin-bottom:10px;
+}
+
+.signup-button:hover{
+	background-color: #3c514a;
+}
+
 </style>
-
-<!-- <body style="background-color:#111; color:white;">
-	<center>
-		<div class="container">
-		<form method="POST">
-			{% csrf_token %}
-			<fieldset class="">
-				<legend class=''>Sign Up for Seshnet</legend>
-				{{ form|crispy }}
-			</fieldset>
-			<div>
-				<button class = 'btn' style='background-color: #637e75; color: white;' type="Submit">Sign Up</button>
-			</div>
-
-			<div>
-				<small>
-				Already have an account? <a href="{% url 'login' %}">Log in</a>
-				</small>
-			</div>
-		</form>
-		</div>
-	</center>
-</body> -->
 
 <body style="background-color:#111; color:white;">
 	<div class='row m-0'>
@@ -68,11 +61,11 @@ ul li::marker {
 					<form method="POST">
 						{% csrf_token%}
 						<fieldset class="form-group">
-							<legend class=''><img width="50" height="50" src="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png"> Sign Up for Seshnet</legend>
+							<legend class=''><img width="50" height="50" src="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png"> Sign Up for {{serversettings.name}}</legend>
 								{{ form|crispy }}
 						</fieldset>
 						<div>
-							<button class = 'btn' style='background-color: #637e75; color: white; margin-top:20px; margin-bottom:10px;' type="Submit">Log in</button>
+							<button class = 'btn signup-button' type="Submit">Log in</button>
 						</div>
 
 						<div>

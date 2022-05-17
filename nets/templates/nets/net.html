@@ -101,6 +101,7 @@ button.chat-message-submit{
 }
 
 p.message{
+    color: #c9c9c9;
     margin-left: 60px;
     margin-bottom: 5px;
 
@@ -168,6 +169,38 @@ button.delete-message:hover{
     color: #637e75;
 }
 
+.datesent{
+    font-size: 9px;
+    color: #595959;
+}
+
+.createnetbtn{
+    color: white;
+    background-color: #637e75 !important;
+}
+
+.createnetbtn:hover{
+    background-color: #3c514a !important;
+}
+
+.modal-body{
+    border: none;
+}
+
+.modal-header{
+    border: none;
+}
+
+.modal-footer{
+    border: none;
+}
+
+#id_title{
+    color: white;
+    background: #111;
+    border: none;
+}
+
 </style>
 
 </head>
@@ -193,7 +226,7 @@ button.delete-message:hover{
                     <form method="POST" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ createnet_form|crispy }}
-                        <input class="createnetbtn btn btn-primary"  type="submit" value="Create">
+                        <input class="createnetbtn btn"  type="submit" value="Create">
                     </form>
 
               </div>
@@ -247,7 +280,7 @@ button.delete-message:hover{
                     <i class="attachment icon-picture" id="attachment-icon" hidden></i>
                     
                     <!-- User input -->
-                    <div class="chat-message-input" id="chat-message-input" contenteditable="True" placeholder="Send a message..."></div>
+                    <div class="chat-message-input" id="chat-message-input"  placeholder="Send a message..."></div>
                     
                     <!-- Send button -->
                     <button class="chat-message-submit" id="chat-message-submit" type="button" hidden>Send</button>
@@ -291,7 +324,7 @@ var last_message_date =  "";
     } else {
         document.getElementById('chat-log').innerHTML += "<hr style='opacity:0%;' id='hr-{{message.id}}'>"
         document.getElementById('chat-log').innerHTML += "<img class='rounded-circle' width='40px' height='40px' src='{{ message.author.profile.image.url }}' style='margin-right:20px; margin-bottom: 10px; float:left;' id='pfp-{{message.id}}'>"
-        document.getElementById('chat-log').innerHTML += '<small class="username" id="username-{{message.id}}">{{ message.author }}</small><small id="date-{{message.id}}"> @{{ message.date_sent }}</small><br>'
+        document.getElementById('chat-log').innerHTML += '<small class="username" id="username-{{message.id}}">{{ message.author }}</small><small class="datesent" id="date-{{message.id}}"> @{{ message.date_sent }}</small><br>'
         
 
         {% if message.author == user or user.profile.role == 'Moderator' or user.profile.role == 'Admin' %}
@@ -347,6 +380,21 @@ const chatSocket = new ReconnectingWebSocket(
 );
 
 console.log(chatSocket)
+
+
+function supportsPlaintextEditables () {
+    var div = document.createElement('div');
+    div.setAttribute('contenteditable', 'PLAINTEXT-ONLY');
+
+    return div.contentEditable === 'plaintext-only';
+}
+
+if (supportsPlaintextEditables() == 1 ){
+    document.getElementById('chat-message-input').setAttribute('contenteditable', 'plaintext-only')
+}else{
+    document.getElementById('chat-message-input').setAttribute('contenteditable', 'True')
+}
+
 
 $('#image_form').on('submit', function (e) {
         e.preventDefault();
@@ -603,7 +651,7 @@ chatSocket.onmessage = function(e) {
         }else{
             document.getElementById('chat-log').innerHTML += "<hr style='opacity:0%;' id='hr-" + data.message_id +"'>"
             document.getElementById('chat-log').innerHTML += ("<img class='rounded-circle' width='40px' height='40px' src='" + data.user_image +"' style='margin-right:20px; margin-bottom: 10px; float:left;' id='pfp-" + data.message_id + "'>");
-            document.getElementById('chat-log').innerHTML += ('<small class="username" id="username-'+ data.message_id +'">' + data.username + '</small><small id="date-' + data.message_id + '"> @' + data.date_sent + '</small><br>')
+            document.getElementById('chat-log').innerHTML += ('<small class="username" id="username-'+ data.message_id +'">' + data.username + '</small><small class="datesent"  id="date-' + data.message_id + '"> @' + data.date_sent + '</small><br>')
             
             if (data.username == '{{user.username}}' || '{{user.profile.role}}' == 'Moderator' || '{{user.profile.role}}' == 'Admin'){
                 document.getElementById('chat-log').innerHTML += ('<p class="message" id="' + data.message_id + '"' + ' data_username="' + data.username + '" data_date="' + data.date_sent + '">' + data.message + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage('+ data.message_id +')">delete</button></p>');
@@ -673,8 +721,27 @@ document.querySelector('#chat-message-input').onkeyup = function(e) {
         //If image file was selected
         if($('#id_image').val().length){
 
+
+            var message = document.getElementById('chat-message-input').innerHTML;
+            message = message.replace(
+                /&amp;|&lt;|&gt;|&#39;|&quot;/g,
+                tag =>
+                ({
+                  '&amp;': '&',
+                  '&lt;': '<',
+                  '&gt;': '>',
+                  '&#39;': "'",
+                  '&quot;': '"'
+                 }[tag] || tag)
+                );
+
             // Set value of input field from text from input field
-            document.getElementById("id_content").value = document.getElementById('chat-message-input').innerHTML;
+            document.getElementById("id_content").value = message
+
+
+
+            // Set value of input field from text from input field
+            //document.getElementById("id_content").value = document.querySelector('chat-message-input');
 
             // Form will only be valid if text is sent... so if input is blank, then add some text (so that users can send messages without adding text)
             if(document.getElementById("id_content").value == ''){
@@ -709,6 +776,18 @@ document.querySelector('#chat-message-submit').onclick = function(e) {
     var message = document.getElementById('chat-message-input').innerHTML;
 
     message = message.replaceAll('&nbsp;', ' ')
+
+    message = message.replace(
+        /&amp;|&lt;|&gt;|&#39;|&quot;/g,
+        tag =>
+        ({
+          '&amp;': '&',
+          '&lt;': '<',
+          '&gt;': '>',
+          '&#39;': "'",
+          '&quot;': '"'
+         }[tag] || tag)
+        );
 
     // Check if message is blank before submission, or contains &nbsp
     if(message.replace(/\s/g, '').length != 0){
@@ -772,8 +851,8 @@ if (pos == 0) {
                             $('#chat-log').prepend($('<br><a target="_blank" href="' + data[i]['image_url'] + '"><img class="image_message" id="image-'+ data[i]['message_id'] +'" src="' + data[i]['image_url'] + '"></a><br>').fadeIn('slow'));
                           }
 
-                          // if message is currently logged in user show delete button
-                          if (data[i]['user'] == "{{user.username}}"){
+                          // if message is currently logged in user (or admin/mod ) show delete button
+                          if (data[i]['user'] == "{{user.username}}" || "{{request.user.profile.role}}" == "Admin" || "{{request.user.profile.role}}" == "Moderator"){
                             $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + ' data_username="' + data[i]['user'] + '" data_date="' + data[i]['date_sent'] + '">' + data[i]['message'] + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage(' + data[i]['message_id']  + ')">delete</button></p>').fadeIn('slow'));
                           }else{
                             $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + ' data_username="' + data[i]['user'] + '" data_date="' + data[i]['date_sent'] + '">' + data[i]['message'] + '</p>').fadeIn('slow'));
@@ -789,14 +868,14 @@ if (pos == 0) {
 
 
                           // if message is currently logged in user show delete button
-                          if (data[i]['user'] == "{{user.username}}"){
+                          if (data[i]['user'] == "{{user.username}}" || "{{request.user.profile.role}}" == "Admin" || "{{request.user.profile.role}}" == "Moderator"){
                             $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + ' data_username="' + data[i]['user'] + '" data_date="' + data[i]['date_sent'] + '">' + data[i]['message'] + '<button class="delete-message" id="{{message.id}}-delete" onclick="deleteMessage(' + data[i]['message_id'] + ')">delete</button></p>').fadeIn('slow'));
                           }else{
                             $('#chat-log').prepend($('<p class="message" id="' + data[i]['message_id'] + '"' + ' data_username="' + data[i]['user'] + '" data_date="' + data[i]['date_sent'] + '">' + data[i]['message'] + '</p>').fadeIn('slow'));
                           }
 
                           // User/Message info
-                          $('#chat-log').prepend($('<small class="username" id="username-' + data[i]['message_id'] +'">' + data[i]['user'] + '</small><small id="date-' + data[i]['message_id'] +'">@' + data[i]['date_sent'] + '</small><br>').fadeIn('slow'));
+                          $('#chat-log').prepend($('<small class="username" id="username-' + data[i]['message_id'] +'">' + data[i]['user'] + '</small><small class="datesent"  id="date-' + data[i]['message_id'] +'">@' + data[i]['date_sent'] + '</small><br>').fadeIn('slow'));
 
 
                           // User image

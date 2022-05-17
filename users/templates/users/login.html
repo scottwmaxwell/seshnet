@@ -16,6 +16,11 @@
 		<!-- For icons -->
 		<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
+		<!-- For titlebar icon -->
+		<link rel="icon" href="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png" type="image/icon type">
+
+		<title>Seshnet | Login</title>
+
 	</head>
 
 
@@ -23,6 +28,17 @@
 
 .textinput{
 	max-width: 500px;
+}
+
+.login-button{
+	background-color: #637e75; 
+	color: white; 
+	margin-top:20px; 
+	margin-bottom:10px;
+}
+
+.login-button:hover{
+	background-color: #3c514a;
 }
 
 </style>
@@ -46,7 +62,7 @@
 								{{ form|crispy }}
 						</fieldset>
 						<div>
-							<button class = 'btn' style='background-color: #637e75; color: white; margin-top:20px; margin-bottom:10px;' type="Submit">Log in</button>
+							<button class = 'btn login-button' type="Submit">Log in</button>
 						</div>
 
 						<div>

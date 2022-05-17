@@ -172,7 +172,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         date_sent += day_year
 
         # Hour
-        hour = date.strftime("%H:%M")
+        hour = date.strftime("%I:%M")
         if hour[0] == "0":
             hour = hour[1:]
         date_sent += hour + ' '

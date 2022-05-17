@@ -16,24 +16,26 @@ def signup(request):
 			return redirect('login')
 
 
-	if ServerSettings.objects.all()[0]:
+	if ServerSettings.objects.all():
 
-		serversetting = ServerSettings.objects.all()[0]
-
-		if serversetting.private == True:
+		serversettings = ServerSettings.objects.all()[0]
+		
+		if serversettings.private == True:
 			return render(request, 'users/error.html')
 
 
 	form = UserSignUpForm()
-	context = {"form":form}
+	context = {"form":form, "serversettings":serversettings}
+
 	return render(request, 'users/signup.html', context)
 
 
 def signup_private(request, secret):
 
-	if ServerSettings.objects.all()[0]:
+	if ServerSettings.objects.all():
 
-		server_secret = ServerSettings.objects.all()[0].secret
+		serversettings = ServerSettings.objects.all()[0]
+		server_secret = serversettings.secret
 
 		if secret == server_secret:
 
@@ -47,7 +49,7 @@ def signup_private(request, secret):
 
 
 			form = UserSignUpForm()
-			context = {"form":form}
+			context = {"form":form, "serversettings":serversettings}
 			return render(request, 'users/signup.html', context)
 
 	return render(request, 'users/error.html')

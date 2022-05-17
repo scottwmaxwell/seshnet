@@ -4,7 +4,7 @@ from .models import Net, Message
 from users import views
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from .forms import UploadImageMessage, CreateNet
+from .forms import UploadImageMessage, CreateNet, DeleteNet
 from directmessage.forms import CreateDirectChat
 from directmessage.models import DirectChat
 from django.http import JsonResponse
@@ -82,8 +82,17 @@ def net(request, net_id):
 		if form.is_valid():
 
 			# Check is current user is admin
-			if request.user.profile.role == "Admin":
+			if request.user.profile.role == "Admin" or request.user.profile.role == "Moderator":
 				form.save()
+
+		form = DeleteNet(request.POST)
+		if form.is_valid():
+			if request.POST.get('net_id'):
+				if request.user.profile.role == "Admin" or request.user.profile.role == "Moderator":
+					net_to_delete = Net.objects.get(id=net_id)
+					net_to_delete.delete()
+
+					return redirect('net_index')
 
 
 		form = CreateDirectChat(request.POST, request.FILES)
@@ -112,6 +121,8 @@ def net(request, net_id):
 	createnet_form = CreateNet
 	users = User.objects.all()
 
+	deletenet_form = DeleteNet
+
 	# Get last 50 messages
 	messages = Message.objects.filter(net=Net.objects.get(id=net_id))[::-1][:50][::-1]
 
@@ -122,8 +133,10 @@ def net(request, net_id):
 		'users': users,
 		'nets': nets,
 		'form': form,
-		'createnet_form': createnet_form
+		'createnet_form': createnet_form,
+		'deletenet_form': deletenet_form,
 	}
+
 	return render(request, 'nets/net.html', context)
 
 @login_required

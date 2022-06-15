@@ -18,5 +18,5 @@ The service should be free for all users.
 
 ## Eventual Goal
 
-An eventual goal is to create a centralized place to switch between the servers which are decentralized.
+An eventual goal is to create a centralized place to switch between the servers (or sessions).
 This application is the bare bones and all that should be needed, but to have a website that can be used to access other decentralized servers would help improve the user experience. I'm still brain storming how this could be accomplished...

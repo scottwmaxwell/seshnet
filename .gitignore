@@ -10,6 +10,8 @@ seshnet/.env
 media/
 
 .DS_Store
+Pipfile.lock
+Pipfile
 
 message_images/
 

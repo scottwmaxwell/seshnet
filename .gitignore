@@ -9,6 +9,8 @@ venv.bak/
 seshnet/.env
 media/
 
+.DS_Store
+
 message_images/
 
 # Sublime Text # 

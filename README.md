@@ -1,22 +1,14 @@
-# sesh-net
+# Seshnet
 
-This a web application for communicating
+Seshnet is a decentralized open source communcation app similar to slack or discord.
+Each session (server) contains it's own community that has it's own users and rules.
 
-## Some General Goals
+This is application is still being developed, but an early version of the app can be experienced here: http://seshnet.net
 
-### Decentralized:
-The main goal of this open source project is to create a web application that can easily be self-hosted on a computer with low computing power. The point of this is to create decrentralized system that doesn't have one specific point of control. Each server can implement their own policies.
+This application is built with Django (a Python web framework) and currently utilizes sqlite for the Database.
 
-### Private:
-Communication on this application should be as private as possible without sacrificing too much usability and functionality.
+The eventual goal of this application is to be easily self-hosted or deployed on an AWS EC2 or Linode virtual server.
 
-### Convenient:
-From both the user's and host's point of view, the app should feel easy and usable.
+To acheive the real-time chat functionality, Django channels is utilized to manage websockets and Redis is used as the websocket server.
 
-### Free:
-The service should be free for all users.
-
-## Eventual Goal
-
-An eventual goal is to create a centralized place to switch between the servers which are decentralized.
-This application is the bare bones and all that should be needed, but to have a website that can be used to access other decentralized servers would help improve the user experience. I'm still brain storming how this could be accomplished...
+Memcached is being used to track online activity which can be hidden if chosen by the user.

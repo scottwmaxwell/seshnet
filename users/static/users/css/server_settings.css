@@ -1,0 +1,43 @@
+.main{
+	border-radius: 30px;
+	background-color: #637e75;
+}
+
+.main:hover{
+	color: white;
+	background-color: #3c514a !important;
+}
+
+.save{
+	border-radius: 10px;
+	background-color: #637e75;
+	color: white;
+	margin-top: 20px;
+	float: right;
+}
+
+.save:hover{
+	background-color:#3c514a!important;
+	/*box-shadow: 3px 3px 3px orange !important;*/
+}
+
+#div_id_private{
+	margin-top: 20px;
+}
+
+.copy_btn{
+	background: #515254;
+	color: white;
+}
+
+.toggle-handle{
+	background-color: white !important;
+}
+
+.toggle-on{
+	background-color: #637e75 !important;
+}
+
+.toggle-off{
+	background-color: #444 !important;
+}

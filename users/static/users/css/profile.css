@@ -1,0 +1,58 @@
+.main{
+	border-radius: 30px;
+	background-color: #637e75;
+	color: white;
+}
+
+.main:hover{
+	color: black;
+	background-color: #3c514a !important;
+}
+
+.profile-pic{
+	border-radius: 1000px;
+	width: 200px;
+	height: 200px;
+}
+
+.contain{
+	position:relative;
+}
+
+.image-text{
+	top:70;
+    left:70;
+    position: absolute;
+    opacity: 40%;
+}
+
+#id_image{
+	border-radius: 100px;
+	border: None;
+	color: white;
+	background-color:#637e75;
+}
+
+.profile_submit{
+	background-color: #637e75; 
+	color: white; 
+	float:right;
+	border-radius: 20px;
+}
+
+.profile_submit:hover{
+	color: white;
+	background-color: #3c514a;
+}
+
+.toggle-handle{
+	background-color: white !important;
+}
+
+.toggle-on{
+	background-color: #637e75 !important;
+}
+
+.toggle-off{
+	background-color: #444 !important;
+}

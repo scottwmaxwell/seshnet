@@ -146,8 +146,6 @@ def serverSettings(request):
 			serversetting = ServerSettings()
 			serversetting.save()
 
-
-
 		context ={
 			'updateserversettings': updateserversettings,
 			'serversetting_id': serversetting.id,

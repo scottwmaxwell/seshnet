@@ -1,4 +1,5 @@
 {% load crispy_forms_filters %}
+{% load static %}
 
 <head>
 	<meta charset="UTF-8">
@@ -22,50 +23,14 @@
 	<!-- For titlebar icon -->
 	<link rel="icon" href="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png" type="image/icon type">
 
+	<link rel="stylesheet" href="{% static  'users/css/user_roles.css' %}">
+
 </head>
 
 <header>
 	<title>Admin Settings</title>
 </header>
 
-
-<style>
-
-.main{
-	border-radius: 30px;
-	background-color: #637e75;
-	color: white;
-}
-
-.main:hover{
-	color: black;
-}
-
-.save{
-	border-radius: 10px;
-	background-color: #637e75;
-	color: white;
-	margin-top: 25px;
-	border: None;
-	height: 35px;
-	width: 60px;
-	text-align: center;
-}
-
-.save:hover{
-	color: white;
-	background-color:#3c514a!important;
-	/*box-shadow: 3px 3px 3px orange !important;*/
-}
-
-#id_role{
-	max-width: 20vh;
-	background-color: black;
-	color: white;
-	border: None;
-}
-
-</style>
 <!-- Top Nav -->
 <nav id ="main" class="navbar navbar-expand-lg navbar-light bg-dark" style="opacity:98%; height:">
 	<div class="container-fluid">

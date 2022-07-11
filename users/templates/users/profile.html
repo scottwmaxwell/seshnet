@@ -1,4 +1,5 @@
 {% load crispy_forms_filters %}
+{% load static %}
 
 <head>
 	<meta charset="UTF-8">
@@ -21,85 +22,14 @@
 
 	<!-- For titlebar icon -->
 	<link rel="icon" href="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png" type="image/icon type">
-
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %}
-
 	
+	<link rel="stylesheet" href="{% static  'users/css/profile.css' %}">
+
 </head>
 
 <header>
 	<title>Profile</title>
 </header>
-
-
-<style>
-
-.main{
-	border-radius: 30px;
-	background-color: #637e75;
-	color: white;
-}
-
-.main:hover{
-	color: black;
-	background-color: #3c514a !important;
-}
-
-.profile-pic{
-	border-radius: 1000px;
-	width: 200px;
-	height: 200px;
-}
-
-.contain{
-	position:relative;
-}
-
-.image-text{
-	top:70;
-    left:70;
-    position: absolute;
-    opacity: 40%;
-}
-
-#id_image{
-	border-radius: 100px;
-	border: None;
-	color: white;
-	background-color:#637e75;
-}
-
-.profile_submit{
-	background-color: #637e75; 
-	color: white; 
-	float:right;
-	border-radius: 20px;
-}
-
-.profile_submit:hover{
-	color: white;
-	background-color: #3c514a;
-}
-
-.toggle-handle{
-	background-color: white !important;
-}
-
-.toggle-on{
-	background-color: #637e75 !important;
-}
-
-.toggle-off{
-	background-color: #444 !important;
-}
-
-</style>
 <!-- Top Nav -->
 <nav id ="main" class="navbar navbar-expand-lg navbar-light bg-dark" style="opacity:98%; height:">
 	<div class="container-fluid">

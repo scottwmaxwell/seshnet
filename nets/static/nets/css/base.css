@@ -1,0 +1,31 @@
+.createnetbtn{
+    background-color:#ce650a; 
+    border: none;
+    float: right;
+}
+
+.createnetbtn:hover{
+    background-color:#111; 
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #1d1e23; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #111; 
+  border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}

@@ -5,7 +5,7 @@ Each session (server) contains it's own community that has it's own users and ru
 
 This is application is still being developed, but an early version of the app can be experienced here: http://seshnet.net
 
-This application is built with Django (a Python web framework) and currently utilizes sqlite for the Database.
+This application is built with Django (a Python web framework)
 
 The eventual goal of this application is to be easily self-hosted or deployed on an AWS EC2 or Linode virtual server.
 

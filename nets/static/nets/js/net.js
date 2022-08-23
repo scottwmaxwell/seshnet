@@ -8,8 +8,15 @@ window.onload=function () {
 
 const netID = JSON.parse(document.getElementById('net-id').textContent);
 
+wsStart = 'ws://'
+
+// Check for SSL. If SSL change websocket protocol
+if loc.protocol == 'https:'{
+    wsStart = 'wss://'
+}
+
 const chatSocket = new ReconnectingWebSocket(
-    'ws://'
+    wsStart
     + window.location.host
     + '/ws/net/'
     + netID

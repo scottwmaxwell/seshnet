@@ -8,8 +8,15 @@ window.onload=function () {
 
 const chatID = JSON.parse(document.getElementById('chat-id').textContent);
 
+var wsStart = 'ws://'
+
+// Check if SSL > change websocket protocol
+if (loc.protocol == 'https:'){
+    wsStart = 'wss://'
+}
+
 const chatSocket = new ReconnectingWebSocket(
-    'ws://'
+    wsStart
     + window.location.host
     + '/ws/directmessage/'
     + chatID

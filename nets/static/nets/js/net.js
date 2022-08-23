@@ -11,7 +11,7 @@ const netID = JSON.parse(document.getElementById('net-id').textContent);
 wsStart = 'ws://'
 
 // Check for SSL. If SSL change websocket protocol
-if loc.protocol == 'https:'{
+if window.location.protocol == 'https:'{
     wsStart = 'wss://'
 }
 

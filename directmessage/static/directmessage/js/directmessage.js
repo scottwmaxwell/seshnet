@@ -11,7 +11,7 @@ const chatID = JSON.parse(document.getElementById('chat-id').textContent);
 var wsStart = 'ws://'
 
 // Check if SSL > change websocket protocol
-if (loc.protocol == 'https:'){
+if (window.location.protocol == 'https:'){
     wsStart = 'wss://'
 }
 

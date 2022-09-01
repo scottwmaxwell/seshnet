@@ -4,6 +4,7 @@ from .forms import UserSignUpForm, ProfileUpdate, UpdateServerSettings, UpdateRo
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import ServerSettings
+import uuid
 
 def signup(request):
 
@@ -127,6 +128,14 @@ def serverSettings(request):
 			form = UpdateServerSettings(request.POST, instance=serversetting)
 			if form.is_valid():
 				form.save()
+
+			# Generate new Secret for URL
+			if request.post.get('serversecret'):
+				setting_id = request.POST.get('serversecret')
+				serversetting = ServerSettings.objects.get(id=setting_id)
+				serversetting.secret = uuid.uuid4().hex
+				serversetting.save()
+			
 
 
 		if ServerSettings.objects.all():

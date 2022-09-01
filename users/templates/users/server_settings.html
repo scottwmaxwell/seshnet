@@ -74,6 +74,11 @@
 			<small>Setting the server to private will prevent users from signing up without the link below</small><br>
 			<button class="btn copy_btn" onclick="copyToClipboard('{{ request.get_host }}/signup/{{ serversetting_secret }}')"><i class="icon-copy"></i> Copy Invite Link</button>
 
+			<form method="POST">
+				{% csrf_token %}
+				<button class="btn save" name="serversecret" value="{{ serversetting_id }}" type="submit">Generate New Private URL</button>
+			</form>
+
 		</div>
 
 	    <!-- Buffer to center content -->

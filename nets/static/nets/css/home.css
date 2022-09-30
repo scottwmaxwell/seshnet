@@ -1,0 +1,60 @@
+body{
+  font-family: "Varela Round";
+}
+
+.main{
+	border-radius: 30px;
+	background-color: #637e75;
+	color: white;
+}
+
+.main:hover{
+	color: white;
+	background-color:#3c514a !important;
+/*	box-shadow: 3px 3px 3px green !important;*/
+}
+
+section{
+  display: grid;
+	place-items: center;
+	align-content: center;
+	min-height:100vh;
+}
+
+.hidden{
+	opacity: 0;
+	filter: blur(5px);
+	/* transform: translateX(-100%); */
+	transition: all 3s;
+}
+
+@media(prefers-reduced-motion){
+	.hidden {
+		transition: none;
+	}
+}
+
+.show {
+	opacity: 1;
+	filter: blur(0);
+	/* transform: translateX(0); */
+}
+
+.hiding{
+	opacity: 0;
+	filter: blur(5px);
+	/* transform: translateX(-100%); */
+	transition: all 2s;
+}
+
+@media(prefers-reduced-motion){
+	.hiding {
+		transition: none;
+	}
+}
+
+.showing {
+	opacity: 1;
+	filter: blur(0);
+	/* transform: translateX(0); */
+}

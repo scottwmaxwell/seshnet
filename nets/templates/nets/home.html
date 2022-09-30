@@ -1,5 +1,9 @@
+{% load static %}
+
 <head>
 	<meta charset="UTF-8">
+
+	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Varela+Round" />
 	
 	<!-- For mobile devices -->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,38 +15,38 @@
 	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
 	<link rel="icon" href="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png" type="image/icon type">
+	
+	
+	<link rel="stylesheet" href="{% static  'nets/css/home.css' %}">
 
 </head>
 
 <header>
-	<title>Seshnet</title>
+	<title>SeshNet</title>
 </header>
 
 
-<style>
-
-.main{
-	border-radius: 30px;
-	background-color: #637e75;
-	color: white;
-}
-
-.main:hover{
-	color: white;
-	background-color:#3c514a !important;
-/*	box-shadow: 3px 3px 3px green !important;*/
-}
-
-</style>
 
 <!-- Top Nav -->
 <nav id ="main" class="navbar navbar-expand-lg navbar-light bg-dark" style="opacity:98%; height:">
 	<div class="container-fluid">
+		
+		<div>
 		{% if user.is_authenticated %}
-			<button class='btn main' style='background-color:white; color: black;' onclick="location.href='{% url 'net_index' %}'">Open Seshnet</button>
+			<button class='btn main' style='background-color:white; color: black;' onclick="location.href='{% url 'net_index' %}'">Open SeshNet</button>
+			
 		{% else %}
 			<button class='btn main' onclick="location.href='{% url 'login' %}'">Login</button>
+
+			{% if serversettings.private == False %}
+				<button class='btn main' style='background-color: #444; color: white;' onclick="location.href='{% url 'signup' %}'">Sign Up</button>
+			{% endif %}			
+
 		{% endif %}
+		</div>
+
+
+		
 	</div>
 </nav>
 
@@ -57,27 +61,27 @@
             <div class="p-3 mb-2 text-light">
             	<center>
 				<h1 style="color:white;"><img width="50" height="50" src="http://{{ request.META.HTTP_HOST }}/media/icon/sn.png"> Welcome to {{serversettings.name}}</h1>
-
-				<h6 style="color:gray; margin-bottom:30px;">A Seshnet server</h6>
 				
+				<h6 class='hiding' style="color:gray; margin-bottom:30px;">A SeshNet server</h6>
 
-				{% if user.is_authenticated %}
-					<button class='btn main' onclick="location.href='{% url 'net_index' %}'">Open Seshnet</button>
-				{% else %}
-					<button class='btn main' onclick="location.href='{% url 'login' %}'">Login</button>
-
-					{% if serversettings.private == False %}
-						<button class='btn main' style='background-color: #444; color: white;' onclick="location.href='{% url 'signup' %}'">Sign Up</button>
-					{% endif %}
-
-				{% endif %}
 				</center>
 
-
             </div>    
+			<section class="hidden" style="min-height:0vh;">
+				<h1>A decentralized chat application</h1>
+			</section>
+
+			<section class="hidden">
+				<h1>Chat in real-time with your own rules</h1>
+			</section>
+
+			<section class="hidden">
+				<h1>Protect your freedom of speech</h1>
+			</section>
 
         </div>
 
     </div>
 
 </body>
+<script src="{% static 'nets/js/animate.js' %}"></script>

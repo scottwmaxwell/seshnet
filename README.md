@@ -3,8 +3,7 @@
 Seshnet is a decentralized open source communcation app similar to slack or discord.
 Each session (server) contains it's own community that has it's own users and rules.
 
-This is application is still being developed, but the functionality of this web app can be seen here:
-[SeshNet Video](https://rumble.com/v1fhf7v-seshnet-i-made-a-real-time-chat-app.html)
+This is application is still being developed.
 
 This application is built with [Django](https://www.djangoproject.com/).
 

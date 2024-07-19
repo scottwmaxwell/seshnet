@@ -9,7 +9,7 @@ venv.bak/
 seshnet/.env
 media/
 
-.DS_Store
+*.DS_Store
 Pipfile.lock
 Pipfile
 
